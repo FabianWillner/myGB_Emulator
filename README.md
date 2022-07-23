@@ -6,3 +6,5 @@ to Install all requirements
 and 
 ```npm run start```
 to start the server
+
+DISCLAMER THIS DOESNT WORK RN
