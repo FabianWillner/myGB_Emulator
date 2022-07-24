@@ -9,7 +9,8 @@
         "module": "es2022",
         "moduleResolution": "node",
         "strict": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "lib": ["DOM"]
     },
     "include": ["src/**/*.ts", "test/**/*.ts"]
 }

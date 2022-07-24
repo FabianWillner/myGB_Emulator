@@ -55,6 +55,11 @@ export class CPU {
     }
 
     private printInstruction(instruction: number) {
-        console.log("Instruction: %s\tHexcode: %s\tPC %s", instructions.OPCODES_DEFAULT_NAMES[instruction], "$" + instruction.toString(16), "$" + this.registers.PC.toString(16))
+        console.log(
+            'Instruction: %s\tHexcode: %s\tPC %s',
+            instructions.OPCODES_DEFAULT_NAMES[instruction],
+            '$' + instruction.toString(16),
+            '$' + this.registers.PC.toString(16)
+        );
     }
 }

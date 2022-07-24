@@ -1,6 +1,6 @@
 export class Memory {
     public readonly data: Uint8Array;
-    public constructor(size: number = 0xffff) {
+    public constructor(size = 0xffff) {
         this.data = new Uint8Array(size);
     }
 
