@@ -3,7 +3,7 @@
     "compilerOptions": {
         "rootDir": ".",
         "outDir": "build",
-        "sourceMap": true,
+        "sourceMap": false,
         "esModuleInterop": true,
         "target": "ES2022",
         "module": "es2022",
