@@ -1,4 +1,4 @@
-import {Cartridge} from './cart/cart.js';
+import {Cartridge} from './cart/cartridge.js';
 import {CPU} from './cpu/cpu.js';
 import {GPU} from './gpu/gpu.js';
 import {Tile} from './gpu/tile.js';
