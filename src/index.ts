@@ -1,9 +1,10 @@
+import {Cartridge} from './cart/cart.js';
 import {CPU} from './cpu/cpu.js';
 import {GPU} from './gpu/gpu.js';
 import {Tile} from './gpu/tile.js';
 
 const cpu = new CPU();
-const gpu = new GPU();
+//const gpu = new GPU();
 const mem = cpu.memory;
 //const gpu = new GPU();
 mem.set8Bit(0x0000, 0x00);
@@ -12,8 +13,12 @@ mem.set8Bit(0x0002, 0x11);
 
 //cpu.run();
 //cpu.halt();
-console.log('Test');
 cpu.step();
+
+const cartridge = new Cartridge('../../../roms/Glory.rom');
+cartridge.logo.forEach(element => {
+    //printHex(element);
+});
 
 const tile = new Tile();
 const tileData = [
@@ -24,12 +29,12 @@ const tileData2 = [
     0x7c, 0x7c, 0x00, 0xc6, 0xc6, 0x00, 0x00, 0xfe, 0xc6, 0xc6, 0x00, 0xc6,
     0xc6, 0x00, 0x00, 0x00,
 ];
-tile.loadDataToTile(tileData2);
+//tile.loadDataToTile(tileData);
 //gpu.printTile(tile, 0, 0);
-gpu.printallTile(tile);
+//gpu.printallTile(tile);
 
 function printHex(value: number) {
-    console.log('$%d', value.toString(16));
+    console.log('$%s', value.toString(16));
 }
 
 function getHex(value: number) {
