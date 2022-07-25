@@ -1,23 +1,26 @@
-export class Memory {
+import {MemoryDevice} from './bus';
+
+export class Memory implements MemoryDevice {
     public readonly data: Uint8Array;
-    public constructor(size = 0xffff) {
+    public offset: number;
+
+    public constructor(size = 0xffff, offset: number = 0) {
         this.data = new Uint8Array(size);
+        this.offset = offset;
+    }
+    public read8(address: number) {
+        return this.data[address];
+    }
+    public read16(address: number) {
+        return (this.read8(address + 1) << 8) | this.read8(address);
     }
 
-    public set8Bit(adress: number, byte: number) {
-        this.data[adress] = byte & 0xff;
+    public write8(address: number, byte: number) {
+        this.data[address] = byte & 0xff;
     }
 
-    public get8Bit(adress: number) {
-        return this.data[adress];
-    }
-
-    public set16Bit(adress: number, value: number) {
-        this.set8Bit(adress + 1, (value & 0xff00) >> 8);
-        this.set8Bit(adress, value & 0xff);
-    }
-
-    public get16Bit(adress: number) {
-        return (this.get8Bit(adress + 1) << 8) | this.get8Bit(adress);
+    public write16(address: number, value: number) {
+        this.write8(address + 1, (value & 0xff00) >> 8);
+        this.write8(address, value & 0xff);
     }
 }

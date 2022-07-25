@@ -1,6 +1,7 @@
 const NOP = 0x00;
+const JP_a16 = 0xc3;
 
-export {NOP};
+export {NOP, JP_a16};
 
 interface Opcodes {
     [key: string]: string;

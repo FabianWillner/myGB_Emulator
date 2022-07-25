@@ -9,11 +9,12 @@ import {
     RAM_SIZE,
     DESTINATION_CODE,
 } from './cart_lookup.js';
+import {MemoryDevice} from '../memory/bus.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export class Cartridge {
+export class Cartridge implements MemoryDevice {
     public entryPoint: number[] = new Array<number>(4); // 4 bytes
     public logo: number[] = new Array<number>(48); // 48 bytes
     public title: number[] = new Array<number>(16); // Upper case ASCII 16 bytes
@@ -95,6 +96,30 @@ export class Cartridge {
         }
     }
 
+    private loadCart(stringPath: string) {
+        const fspath = path.join(__dirname, stringPath);
+        return fs.readFileSync(fspath);
+    }
+
+    public read8(address: number) {
+        return this.data[address];
+    }
+
+    public read16(address: number): number {
+        const high = this.data[address];
+        const low = this.data[address + 1];
+        return ((high << 8) & 0xff00) | (low & 0xff);
+    }
+
+    public write8(address: number, byte: number) {
+        this.data[address] = byte & 0xff;
+    }
+
+    public write16(address: number, value: number): void {
+        this.write8(address, (value >> 8) & 0xff);
+        this.write8(address + 1, value & 0xff);
+    }
+
     private printInformation() {
         const title = this.title.map(x => String.fromCharCode(x)).join('');
         console.log('Title: %s', title);
@@ -136,10 +161,5 @@ export class Cartridge {
             destination,
             DESTINATION_CODE[destination]
         );
-    }
-
-    private loadCart(stringPath: string) {
-        const fspath = path.join(__dirname, stringPath);
-        return fs.readFileSync(fspath);
     }
 }

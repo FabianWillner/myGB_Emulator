@@ -3,22 +3,13 @@ import {CPU} from './cpu/cpu.js';
 import {GPU} from './gpu/gpu.js';
 import {Tile} from './gpu/tile.js';
 
-const cpu = new CPU();
-//const gpu = new GPU();
-const mem = cpu.memory;
-//const gpu = new GPU();
-mem.set8Bit(0x0000, 0x00);
-mem.set8Bit(0x0001, 0x10);
-mem.set8Bit(0x0002, 0x11);
+const cpu = new CPU('../../../roms/EldenRing.rom');
 
 //cpu.run();
 //cpu.halt();
-cpu.step();
-
-const cartridge = new Cartridge('../../../roms/Glory.rom');
-cartridge.logo.forEach(element => {
-    //printHex(element);
-});
+for (let i = 0; i < 10; i++) {
+    cpu.step();
+}
 
 const tile = new Tile();
 const tileData = [
@@ -44,7 +35,7 @@ function getHex(value: number) {
 function printNext(adress: number, next = 8) {
     let mystring = '';
     for (let i = 0; i < next; i++) {
-        mystring = mystring + getHex(mem.get8Bit(adress + i)) + ' ';
+        //mystring = mystring + getHex(mem.get8Bit(adress + i)) + ' ';
     }
     console.log(mystring);
 }
