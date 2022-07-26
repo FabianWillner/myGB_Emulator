@@ -1,4 +1,5 @@
-import {Cartridge} from '../cart/cartridge';
+import {Cartridge} from '../cart/cartridge.js';
+import {Memory} from './memory.js';
 
 // Start	End	Description	Notes
 // 0000	    3FFF	16 KiB ROM bank 00	From cartridge, usually a fixed bank
@@ -41,10 +42,12 @@ enum MemoryRanges {
 
 export class Bus implements MemoryDevice {
     private cartridge: Cartridge;
+    private memory: Memory;
 
     constructor(cartridge: Cartridge) {
         // TODO
         this.cartridge = cartridge;
+        this.memory = new Memory(0xffff, MemoryRanges.ROM_END + 1);
     }
 
     public read8(address: number): number {
@@ -55,8 +58,9 @@ export class Bus implements MemoryDevice {
             return this.cartridge.read8(u16Address);
         }
 
-        console.log('Not implemented yet');
-        return -1;
+        //console.log('Not implemented yet');
+        return this.memory.read8(u16Address);
+        //return -1;
     }
 
     public read16(adress: number) {
@@ -71,12 +75,13 @@ export class Bus implements MemoryDevice {
             // Cartridge
             return this.cartridge.write8(u16Address, u8Data);
         }
-        console.log('Not implemented yet');
+        return this.memory.write8(u16Address, u8Data);
+        //console.log('Not implemented yet');
     }
 
     public write16(address: number, value: number): void {
-        this.write8(address, (value >> 8) & 0xff);
-        this.write8(address + 1, value & 0xff);
+        this.write8(address + 1, (value & 0xff00) >> 8);
+        this.write8(address, value & 0xff);
     }
 
     public loadCart(cartridge: Cartridge) {

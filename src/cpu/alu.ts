@@ -10,6 +10,10 @@ export const ALU = {
         return {value: res, Z: res === 0 ? 1 : 0, N: 0, H: halfCarry};
     },
 
+    inc16(a: number) {
+        return {value: (a + 1) & 0xffff};
+    },
+
     dec(a: number) {
         const res = (a - 1) & 0xff;
         const halfCarry = (((a & 0xf) - 1) >> 4) & 1;
@@ -36,6 +40,45 @@ export const ALU = {
             N: 0,
             H: 0,
             C: 0,
+        };
+    },
+
+    sub(a: number, n: number) {
+        const sub = a - n;
+        const halfCarry = (((a & 0xf) - (n & 0xf)) >> 4) & 1;
+
+        return {
+            value: sub & 0xff,
+            Z: sub === 0 ? 1 : 0,
+            N: 1,
+            H: halfCarry,
+            C: (sub >> 8) & 1,
+        };
+    },
+
+    add16(a: number, b: number) {
+        const sum = a + b;
+        const halfCarry = ((a & 0xfff) + (b & 0xfff)) >> 12;
+
+        return {
+            value: sum & 0xffff,
+            N: 0,
+            H: halfCarry,
+            C: (sum >> 16) & 1,
+        };
+    },
+
+    adc(a: number, b: number, carry: number) {
+        const sum = a + b + carry;
+        const maskedValue = sum & 0xff;
+        const halfCarry = ((a & 0xf) + (b & 0xf) + carry) >> 4;
+
+        return {
+            value: maskedValue,
+            Z: maskedValue === 0 ? 1 : 0,
+            N: 0,
+            H: halfCarry,
+            C: sum !== maskedValue ? 1 : 0,
         };
     },
 };

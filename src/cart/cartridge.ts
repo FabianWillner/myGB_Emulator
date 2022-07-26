@@ -106,8 +106,8 @@ export class Cartridge implements MemoryDevice {
     }
 
     public read16(address: number): number {
-        const high = this.data[address];
-        const low = this.data[address + 1];
+        const high = this.data[address + 1];
+        const low = this.data[address];
         return ((high << 8) & 0xff00) | (low & 0xff);
     }
 
@@ -116,8 +116,8 @@ export class Cartridge implements MemoryDevice {
     }
 
     public write16(address: number, value: number): void {
-        this.write8(address, (value >> 8) & 0xff);
-        this.write8(address + 1, value & 0xff);
+        this.write8(address + 1, (value >> 8) & 0xff);
+        this.write8(address, value & 0xff);
     }
 
     private printInformation() {

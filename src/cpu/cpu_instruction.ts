@@ -3,6 +3,12 @@ import {CPURegisters} from './cpu_registers';
 import * as ins from './../instructions/instructions.js';
 import {ALU} from './alu.js';
 
+function uint8ToInt8(value: number): number {
+    const maskedValue = value & 0xff;
+    const sign = (maskedValue >> 7) & 1;
+    return sign ? -(~maskedValue & 127) - 1 : maskedValue & 127;
+}
+
 export function executeCpuInstruction(
     opcode: number,
     registers: CPURegisters,
@@ -27,8 +33,20 @@ export function executeCpuInstruction(
             registers.SP -= 2;
             return PC;
 
+        case ins.LD_BC_D16:
+            registers.BC = bus.read16(PC);
+            return PC + 2;
+
+        case ins.LD_DE_D16:
+            registers.DE = bus.read16(PC);
+            return PC + 2;
+
         case ins.LD_HL_D16:
             registers.HL = bus.read16(PC);
+            return PC + 2;
+
+        case ins.LD_SP_D16:
+            registers.SP = bus.read16(PC);
             return PC + 2;
 
         case ins.XOR_A: {
@@ -70,7 +88,231 @@ export function executeCpuInstruction(
             return PC + 1;
 
         case ins.LD_HLD_A:
-            bus.write8(registers.HL, registers.A);
+            bus.write8(registers.HL--, registers.A);
+            return PC;
+
+        case ins.LD_A_A:
+            registers.A = registers.A;
+            return PC;
+
+        case ins.LD_A_B:
+            registers.A = registers.B;
+            return PC;
+
+        case ins.LD_A_C:
+            registers.A = registers.C;
+            return PC;
+
+        case ins.LD_A_D:
+            registers.A = registers.D;
+            return PC;
+
+        case ins.LD_A_E:
+            registers.A = registers.E;
+            return PC;
+
+        case ins.LD_A_H:
+            registers.A = registers.H;
+            return PC;
+
+        case ins.LD_A_L:
+            registers.A = registers.L;
+            return PC;
+
+        case ins.LD_A_HL:
+            registers.A = bus.read8(registers.HL);
+            return PC;
+
+        case ins.LD_B_A:
+            registers.B = registers.A;
+            return PC;
+
+        case ins.LD_B_B:
+            registers.B = registers.B;
+            return PC;
+
+        case ins.LD_B_C:
+            registers.B = registers.C;
+            return PC;
+
+        case ins.LD_B_D:
+            registers.B = registers.D;
+            return PC;
+
+        case ins.LD_B_E:
+            registers.B = registers.E;
+            return PC;
+
+        case ins.LD_B_H:
+            registers.B = registers.H;
+            return PC;
+
+        case ins.LD_B_L:
+            registers.B = registers.L;
+            return PC;
+
+        case ins.LD_B_HL:
+            registers.B = bus.read8(registers.HL);
+            return PC;
+
+        case ins.LD_C_A:
+            registers.C = registers.A;
+            return PC;
+
+        case ins.LD_C_B:
+            registers.C = registers.B;
+            return PC;
+
+        case ins.LD_C_C:
+            registers.C = registers.C;
+            return PC;
+
+        case ins.LD_C_D:
+            registers.C = registers.D;
+            return PC;
+
+        case ins.LD_C_E:
+            registers.C = registers.E;
+            return PC;
+
+        case ins.LD_C_H:
+            registers.C = registers.H;
+            return PC;
+
+        case ins.LD_C_L:
+            registers.C = registers.L;
+            return PC;
+
+        case ins.LD_C_HL:
+            registers.C = bus.read8(registers.HL);
+            return PC;
+
+        case ins.LD_D_A:
+            registers.D = registers.A;
+            return PC;
+
+        case ins.LD_D_B:
+            registers.D = registers.B;
+            return PC;
+
+        case ins.LD_D_C:
+            registers.D = registers.C;
+            return PC;
+
+        case ins.LD_D_D:
+            registers.D = registers.D;
+            return PC;
+
+        case ins.LD_D_E:
+            registers.D = registers.E;
+            return PC;
+
+        case ins.LD_D_H:
+            registers.D = registers.H;
+            return PC;
+
+        case ins.LD_D_L:
+            registers.D = registers.L;
+            return PC;
+
+        case ins.LD_D_HL:
+            registers.D = bus.read8(registers.HL);
+            return PC;
+
+        case ins.LD_E_A:
+            registers.E = registers.A;
+            return PC;
+
+        case ins.LD_E_B:
+            registers.E = registers.B;
+            return PC;
+
+        case ins.LD_E_C:
+            registers.E = registers.C;
+            return PC;
+
+        case ins.LD_E_D:
+            registers.E = registers.D;
+            return PC;
+
+        case ins.LD_E_E:
+            registers.E = registers.E;
+            return PC;
+
+        case ins.LD_E_H:
+            registers.E = registers.H;
+            return PC;
+
+        case ins.LD_E_L:
+            registers.E = registers.L;
+            return PC;
+
+        case ins.LD_E_HL:
+            registers.E = bus.read8(registers.HL);
+            return PC;
+
+        case ins.LD_H_A:
+            registers.H = registers.A;
+            return PC;
+
+        case ins.LD_H_B:
+            registers.H = registers.B;
+            return PC;
+
+        case ins.LD_H_C:
+            registers.H = registers.C;
+            return PC;
+
+        case ins.LD_H_D:
+            registers.H = registers.D;
+            return PC;
+
+        case ins.LD_H_E:
+            registers.H = registers.E;
+            return PC;
+
+        case ins.LD_H_H:
+            registers.H = registers.H;
+            return PC;
+
+        case ins.LD_H_L:
+            registers.H = registers.L;
+            return PC;
+
+        case ins.LD_H_HL:
+            registers.H = bus.read8(registers.HL);
+            return PC;
+
+        case ins.LD_L_A:
+            registers.L = registers.A;
+            return PC;
+
+        case ins.LD_L_B:
+            registers.L = registers.B;
+            return PC;
+
+        case ins.LD_L_C:
+            registers.L = registers.C;
+            return PC;
+
+        case ins.LD_L_D:
+            registers.L = registers.D;
+            return PC;
+
+        case ins.LD_L_E:
+            registers.L = registers.E;
+            return PC;
+
+        case ins.LD_L_H:
+            registers.L = registers.H;
+            return PC;
+
+        case ins.LD_L_L:
+            registers.L = registers.L;
+            return PC;
+
+        case ins.LD_L_HL:
+            registers.H = bus.read8(registers.HL);
             return PC;
 
         case ins.INC_A: {
@@ -201,9 +443,10 @@ export function executeCpuInstruction(
 
         case ins.JR_NZ_R8:
             if (registers.flags.Z) {
-                // do nothing
+                PC++;
             } else {
-                PC = (PC - 1 + bus.read8(PC)) & 0xffff;
+                const offset = uint8ToInt8(bus.read8(PC));
+                PC = PC + 1 + offset;
             }
             return PC;
 
@@ -226,6 +469,457 @@ export function executeCpuInstruction(
             registers.flags.N = N;
             registers.flags.C = C;
             return PC;
+        }
+
+        case ins.CP_A: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.A);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_B: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.B);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_C: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.C);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_D: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.D);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_E: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.E);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_H: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.H);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_L: {
+            const {H, Z, N, C} = ALU.sub(registers.A, registers.L);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_HL: {
+            const {H, Z, N, C} = ALU.sub(registers.A, bus.read8(registers.HL));
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.CP_D8: {
+            const {H, Z, N, C} = ALU.sub(registers.A, bus.read8(PC));
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            return PC + 1;
+        }
+
+        case ins.ADD_HL_BC: {
+            const {value, N, H, C} = ALU.add16(registers.HL, registers.BC);
+
+            registers.HL = value;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADD_HL_DE: {
+            const {value, N, H, C} = ALU.add16(registers.HL, registers.DE);
+
+            registers.HL = value;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADD_HL_HL: {
+            const {value, N, H, C} = ALU.add16(registers.HL, registers.HL);
+
+            registers.HL = value;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADD_HL_SP: {
+            const {value, N, H, C} = ALU.add16(registers.HL, registers.SP);
+
+            registers.HL = value;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.LD_HL_A: {
+            bus.write8(registers.HL, registers.A);
+            return PC;
+        }
+        case ins.LD_HL_B: {
+            bus.write8(registers.HL, registers.B);
+            return PC;
+        }
+        case ins.LD_HL_C: {
+            bus.write8(registers.HL, registers.C);
+            return PC;
+        }
+        case ins.LD_HL_D: {
+            bus.write8(registers.HL, registers.D);
+            return PC;
+        }
+        case ins.LD_HL_E: {
+            bus.write8(registers.HL, registers.E);
+            return PC;
+        }
+        case ins.LD_HL_H: {
+            bus.write8(registers.HL, registers.H);
+            return PC;
+        }
+        case ins.LD_HL_L: {
+            bus.write8(registers.HL, registers.L);
+            return PC;
+        }
+        case ins.LD_HL_D8: {
+            bus.write8(registers.HL, bus.read8(PC));
+            return PC + 1;
+        }
+        case ins.RLCA: {
+            const shifted = registers.A << 1;
+            const carry = (shifted >> 8) & 1;
+
+            registers.A = (shifted & 0xff) | carry;
+            registers.flags.Z = 0;
+            registers.flags.N = 0;
+            registers.flags.H = 0;
+            registers.flags.C = carry;
+            return PC;
+        }
+
+        case ins.LD_A16_SP:
+            bus.write16(bus.read16(PC), registers.SP);
+            return PC + 2;
+
+        case ins.JP_NZ_A16:
+            if (registers.flags.Z) {
+                PC += 2;
+            } else {
+                PC = bus.read16(PC);
+            }
+            return PC;
+
+        case ins.JP_Z_A16:
+            if (!registers.flags.Z) {
+                PC += 2;
+            } else {
+                PC = bus.read16(PC);
+            }
+            return PC;
+
+        case ins.JP_NC_A16:
+            if (registers.flags.C) {
+                PC += 2;
+            } else {
+                PC = bus.read16(PC);
+            }
+            return PC;
+
+        case ins.JP_C_A16:
+            if (!registers.flags.C) {
+                PC += 2;
+            } else {
+                PC = bus.read16(PC);
+            }
+            return PC;
+
+        case ins.INC_BC: {
+            const {value} = ALU.inc16(registers.BC);
+            registers.BC = value;
+            return PC;
+        }
+        case ins.INC_DE: {
+            const {value} = ALU.inc16(registers.DE);
+            registers.DE = value;
+            return PC;
+        }
+        case ins.INC_HL: {
+            const {value} = ALU.inc16(registers.HL);
+            registers.HL = value;
+            return PC;
+        }
+        case ins.INC_BC: {
+            const {value} = ALU.inc16(registers.BC);
+            registers.BC = value;
+            return PC;
+        }
+
+        case ins.ADC_A_A: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.A,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_B: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.B,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_C: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.C,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_D: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.D,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_E: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.E,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_H: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.H,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_L: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                registers.L,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_HL: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                bus.read8(registers.HL),
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+
+        case ins.ADC_A_D8: {
+            const {value, Z, N, H, C} = ALU.adc(
+                registers.A,
+                bus.read8(PC),
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC + 1;
+        }
+
+        case ins.SUB_A: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.A);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_B: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.B);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_C: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.C);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_D: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.D);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_E: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.E);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_H: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.H);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_L: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, registers.L);
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_HL: {
+            const {value, Z, N, H, C} = ALU.sub(
+                registers.A,
+                bus.read8(registers.HL)
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC;
+        }
+        case ins.SUB_D8: {
+            const {value, Z, N, H, C} = ALU.sub(registers.A, bus.read8(PC));
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            return PC + 1;
         }
 
         default: {

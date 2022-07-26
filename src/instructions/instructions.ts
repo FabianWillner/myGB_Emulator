@@ -2,8 +2,19 @@ const NOP = 0x00;
 const JP_a16 = 0xc3;
 const DI = 0xf3;
 const PUSH_HL = 0xe5;
-const LD_HL_D16 = 0x21;
 const XOR_A = 0xaf;
+
+const RLCA = 0x07;
+
+const ADD_HL_BC = 0x09;
+const ADD_HL_DE = 0x19;
+const ADD_HL_HL = 0x29;
+const ADD_HL_SP = 0x39;
+
+const LD_BC_D16 = 0x01;
+const LD_DE_D16 = 0x11;
+const LD_HL_D16 = 0x21;
+const LD_SP_D16 = 0x31;
 
 const LD_A_D8 = 0x3e;
 const LD_B_D8 = 0x06;
@@ -13,6 +24,79 @@ const LD_E_D8 = 0x1e;
 const LD_H_D8 = 0x26;
 const LD_L_D8 = 0x2e;
 
+const LD_A_A = 0x7f;
+const LD_A_B = 0x78;
+const LD_A_C = 0x79;
+const LD_A_D = 0x7a;
+const LD_A_E = 0x7b;
+const LD_A_H = 0x7c;
+const LD_A_L = 0x7d;
+const LD_A_HL = 0x7e;
+
+const LD_B_A = 0x47;
+const LD_B_B = 0x40;
+const LD_B_C = 0x41;
+const LD_B_D = 0x42;
+const LD_B_E = 0x43;
+const LD_B_H = 0x44;
+const LD_B_L = 0x45;
+const LD_B_HL = 0x46;
+
+const LD_C_A = 0x4f;
+const LD_C_B = 0x48;
+const LD_C_C = 0x49;
+const LD_C_D = 0x4a;
+const LD_C_E = 0x4b;
+const LD_C_H = 0x4c;
+const LD_C_L = 0x4d;
+const LD_C_HL = 0x4e;
+
+const LD_D_A = 0x57;
+const LD_D_B = 0x50;
+const LD_D_C = 0x51;
+const LD_D_D = 0x52;
+const LD_D_E = 0x53;
+const LD_D_H = 0x54;
+const LD_D_L = 0x55;
+const LD_D_HL = 0x56;
+
+const LD_E_A = 0x5f;
+const LD_E_B = 0x58;
+const LD_E_C = 0x59;
+const LD_E_D = 0x5a;
+const LD_E_E = 0x5b;
+const LD_E_H = 0x5c;
+const LD_E_L = 0x5d;
+const LD_E_HL = 0x5e;
+
+const LD_H_A = 0x67;
+const LD_H_B = 0x60;
+const LD_H_C = 0x61;
+const LD_H_D = 0x62;
+const LD_H_E = 0x63;
+const LD_H_H = 0x64;
+const LD_H_L = 0x65;
+const LD_H_HL = 0x66;
+
+const LD_L_A = 0x6f;
+const LD_L_B = 0x68;
+const LD_L_C = 0x69;
+const LD_L_D = 0x6a;
+const LD_L_E = 0x6b;
+const LD_L_H = 0x6c;
+const LD_L_L = 0x6d;
+const LD_L_HL = 0x6e;
+
+const LD_HL_A = 0x77;
+const LD_HL_B = 0x70;
+const LD_HL_C = 0x71;
+const LD_HL_D = 0x72;
+const LD_HL_E = 0x73;
+const LD_HL_H = 0x74;
+const LD_HL_L = 0x75;
+const LD_HL_D8 = 0x36;
+
+const LD_A16_SP = 0x08;
 const LD_HLD_A = 0x32;
 
 const INC_A = 0x3c;
@@ -23,6 +107,11 @@ const INC_E = 0x1c;
 const INC_H = 0x24;
 const INC_L = 0x2c;
 
+const INC_BC = 0x03;
+const INC_DE = 0x13;
+const INC_HL = 0x23;
+const INC_SP = 0x33;
+
 const DEC_A = 0x3d;
 const DEC_B = 0x05;
 const DEC_C = 0x0d;
@@ -31,18 +120,84 @@ const DEC_E = 0x1d;
 const DEC_H = 0x25;
 const DEC_L = 0x2d;
 
+const CP_A = 0xbf;
+const CP_B = 0xb8;
+const CP_C = 0xb9;
+const CP_D = 0xba;
+const CP_E = 0xbb;
+const CP_H = 0xbc;
+const CP_L = 0xbd;
+const CP_HL = 0xbe;
+const CP_D8 = 0xfe;
+
 const JR_NZ_R8 = 0x20;
+
+const JP_NZ_A16 = 0xc2;
+const JP_Z_A16 = 0xca;
+const JP_NC_A16 = 0xd2;
+const JP_C_A16 = 0xda;
+
+const ADC_A_A = 0x8f;
+const ADC_A_B = 0x88;
+const ADC_A_C = 0x89;
+const ADC_A_D = 0x8a;
+const ADC_A_E = 0x8b;
+const ADC_A_H = 0x8c;
+const ADC_A_L = 0x8d;
+const ADC_A_HL = 0x8e;
+const ADC_A_D8 = 0xce;
+
+const SUB_A = 0x97;
+const SUB_B = 0x90;
+const SUB_C = 0x91;
+const SUB_D = 0x92;
+const SUB_E = 0x93;
+const SUB_H = 0x94;
+const SUB_L = 0x95;
+const SUB_HL = 0x96;
+const SUB_D8 = 0xd6;
 
 const RRA = 0x1f;
 const OR_B = 0xb0;
 
 export {
     NOP,
+    SUB_A,
+    SUB_B,
+    SUB_C,
+    SUB_D,
+    SUB_E,
+    SUB_H,
+    SUB_L,
+    SUB_HL,
+    SUB_D8,
+    ADC_A_A,
+    ADC_A_B,
+    ADC_A_C,
+    ADC_A_D,
+    ADC_A_E,
+    ADC_A_H,
+    ADC_A_L,
+    ADC_A_HL,
+    ADC_A_D8,
+    JP_NZ_A16,
+    JP_Z_A16,
+    JP_NC_A16,
+    JP_C_A16,
+    ADD_HL_BC,
+    ADD_HL_DE,
+    ADD_HL_HL,
+    ADD_HL_SP,
+    RLCA,
     JP_a16,
     DI,
     PUSH_HL,
+    LD_BC_D16,
+    LD_DE_D16,
     LD_HL_D16,
+    LD_SP_D16,
     XOR_A,
+    LD_A16_SP,
     LD_A_D8,
     LD_B_D8,
     LD_C_D8,
@@ -51,6 +206,70 @@ export {
     LD_H_D8,
     LD_L_D8,
     LD_HLD_A,
+    LD_HL_A,
+    LD_HL_B,
+    LD_HL_C,
+    LD_HL_D,
+    LD_HL_E,
+    LD_HL_H,
+    LD_HL_L,
+    LD_HL_D8,
+    LD_A_A,
+    LD_A_B,
+    LD_A_C,
+    LD_A_D,
+    LD_A_E,
+    LD_A_H,
+    LD_A_L,
+    LD_A_HL,
+    LD_B_A,
+    LD_B_B,
+    LD_B_C,
+    LD_B_D,
+    LD_B_E,
+    LD_B_H,
+    LD_B_L,
+    LD_B_HL,
+    LD_C_A,
+    LD_C_B,
+    LD_C_C,
+    LD_C_D,
+    LD_C_E,
+    LD_C_H,
+    LD_C_L,
+    LD_C_HL,
+    LD_D_A,
+    LD_D_B,
+    LD_D_C,
+    LD_D_D,
+    LD_D_E,
+    LD_D_H,
+    LD_D_L,
+    LD_D_HL,
+    LD_E_A,
+    LD_E_B,
+    LD_E_C,
+    LD_E_D,
+    LD_E_E,
+    LD_E_H,
+    LD_E_L,
+    LD_E_HL,
+    LD_H_A,
+    LD_H_B,
+    LD_H_C,
+    LD_H_D,
+    LD_H_E,
+    LD_H_H,
+    LD_H_L,
+    LD_H_HL,
+    LD_L_A,
+    LD_L_B,
+    LD_L_C,
+    LD_L_D,
+    LD_L_E,
+    LD_L_H,
+    LD_L_L,
+    LD_L_HL,
     INC_A,
     INC_B,
     INC_C,
@@ -58,6 +277,10 @@ export {
     INC_E,
     INC_H,
     INC_L,
+    INC_BC,
+    INC_DE,
+    INC_HL,
+    INC_SP,
     DEC_A,
     DEC_B,
     DEC_C,
@@ -65,6 +288,15 @@ export {
     DEC_E,
     DEC_H,
     DEC_L,
+    CP_A,
+    CP_B,
+    CP_C,
+    CP_D,
+    CP_E,
+    CP_H,
+    CP_L,
+    CP_HL,
+    CP_D8,
     JR_NZ_R8,
     RRA,
     OR_B,
