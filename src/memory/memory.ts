@@ -4,7 +4,7 @@ export class Memory implements MemoryDevice {
     public readonly data: Uint8Array;
     public offset: number;
 
-    public constructor(size = 0xffff, offset: number = 0) {
+    public constructor(size = 0xffff, offset = 0) {
         this.data = new Uint8Array(size);
         this.offset = offset;
     }

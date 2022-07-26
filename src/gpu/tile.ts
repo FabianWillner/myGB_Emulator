@@ -1,12 +1,9 @@
-enum colorID {
-    Color0 = 0,
-    Color1,
-    Color2,
-    Color3,
-}
-
 export class Tile {
     public pixels = new Array<number>(8 * 8);
+
+    constructor(bytes: Array<number>) {
+        this.loadDataToTile(bytes);
+    }
 
     public loadDataToTile(bytes: Array<number>) {
         if (bytes.length !== 16) {

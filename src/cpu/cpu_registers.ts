@@ -8,7 +8,7 @@ export class CPURegisters {
         SP: number; PC: number;
     };
 
-    private flags: {
+    public flags: {
         Z: number;
         N: number;
         H: number;
@@ -22,7 +22,7 @@ export class CPURegisters {
             B: 0, C: 0,
             D: 0, E: 0,
             H: 0, L: 0,
-            SP: 0, PC: 0,
+            SP:  0xFFFE, PC: 0,
         };
 
         this.registers = registers;

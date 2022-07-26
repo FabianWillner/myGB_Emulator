@@ -1,7 +1,74 @@
 const NOP = 0x00;
 const JP_a16 = 0xc3;
+const DI = 0xf3;
+const PUSH_HL = 0xe5;
+const LD_HL_D16 = 0x21;
+const XOR_A = 0xaf;
 
-export {NOP, JP_a16};
+const LD_A_D8 = 0x3e;
+const LD_B_D8 = 0x06;
+const LD_C_D8 = 0x0e;
+const LD_D_D8 = 0x16;
+const LD_E_D8 = 0x1e;
+const LD_H_D8 = 0x26;
+const LD_L_D8 = 0x2e;
+
+const LD_HLD_A = 0x32;
+
+const INC_A = 0x3c;
+const INC_B = 0x04;
+const INC_C = 0x0c;
+const INC_D = 0x14;
+const INC_E = 0x1c;
+const INC_H = 0x24;
+const INC_L = 0x2c;
+
+const DEC_A = 0x3d;
+const DEC_B = 0x05;
+const DEC_C = 0x0d;
+const DEC_D = 0x15;
+const DEC_E = 0x1d;
+const DEC_H = 0x25;
+const DEC_L = 0x2d;
+
+const JR_NZ_R8 = 0x20;
+
+const RRA = 0x1f;
+const OR_B = 0xb0;
+
+export {
+    NOP,
+    JP_a16,
+    DI,
+    PUSH_HL,
+    LD_HL_D16,
+    XOR_A,
+    LD_A_D8,
+    LD_B_D8,
+    LD_C_D8,
+    LD_D_D8,
+    LD_E_D8,
+    LD_H_D8,
+    LD_L_D8,
+    LD_HLD_A,
+    INC_A,
+    INC_B,
+    INC_C,
+    INC_D,
+    INC_E,
+    INC_H,
+    INC_L,
+    DEC_A,
+    DEC_B,
+    DEC_C,
+    DEC_D,
+    DEC_E,
+    DEC_H,
+    DEC_L,
+    JR_NZ_R8,
+    RRA,
+    OR_B,
+};
 
 interface Opcodes {
     [key: string]: string;

@@ -1,8 +1,8 @@
-import {Memory} from '../memory/memory.js';
 import {CPURegisters} from './cpu_registers.js';
 import * as instructions from '../instructions/instructions.js';
 import {Bus} from '../memory/bus.js';
 import {Cartridge} from '../cart/cartridge.js';
+import {executeCpuInstruction} from './cpu_instruction.js';
 
 export class CPU {
     public registers: CPURegisters;
@@ -43,20 +43,7 @@ export class CPU {
 
     private execute(instruction: number) {
         this.printInstruction(instruction);
-        let PC = this.registers.PC + 1;
-        switch (instruction) {
-            case instructions.NOP:
-                return PC;
-
-            case instructions.JP_a16:
-                PC = this.bus.read16(PC);
-                return PC;
-            default: {
-                throw new Error(
-                    'Instruction not implemented $' + instruction.toString(16)
-                );
-            }
-        }
+        return executeCpuInstruction(instruction, this.registers, this.bus);
     }
 
     private printInstruction(instruction: number) {

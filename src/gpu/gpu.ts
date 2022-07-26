@@ -1,5 +1,8 @@
 import {Tile} from './tile';
 
+//TODO Scrolling window of the 256x256 pixel background map
+// TODO Window that is ontop of the screen at all times
+// Background and Window share same tile data table
 export class GPU {
     private screenWidth = 160;
     private screenHeight = 144;
@@ -68,5 +71,3 @@ export class GPU {
         }
     }
 }
-
-const canvas = document.getElementById;
