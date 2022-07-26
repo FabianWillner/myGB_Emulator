@@ -160,8 +160,13 @@ const SUB_D8 = 0xd6;
 const RRA = 0x1f;
 const OR_B = 0xb0;
 
+const LDH_A8_A = 0xe0;
+const LDH_A_A8 = 0xf0;
+
 export {
     NOP,
+    LDH_A8_A,
+    LDH_A_A8,
     SUB_A,
     SUB_B,
     SUB_C,

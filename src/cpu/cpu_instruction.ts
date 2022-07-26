@@ -922,6 +922,14 @@ export function executeCpuInstruction(
             return PC + 1;
         }
 
+        case ins.LDH_A8_A:
+            bus.write16(0xff00 + bus.read8(PC), registers.A);
+            return PC + 1;
+
+        case ins.LDH_A_A8:
+            registers.A = bus.read8(0xff00 + bus.read8(PC));
+            return PC + 1;
+
         default: {
             console.log(registers);
             throw new Error(
