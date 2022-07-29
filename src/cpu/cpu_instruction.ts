@@ -2,6 +2,7 @@ import {Bus} from '../memory/bus';
 import {CPURegisters} from './cpu_registers';
 import * as ins from './../instructions/instructions.js';
 import {ALU} from './alu.js';
+import {Stack} from './stack';
 
 function uint8ToInt8(value: number): number {
     const maskedValue = value & 0xff;
@@ -12,7 +13,8 @@ function uint8ToInt8(value: number): number {
 export function executeCpuInstruction(
     opcode: number,
     registers: CPURegisters,
-    bus: Bus
+    bus: Bus,
+    stack: Stack
 ): number {
     let PC = registers.PC + 1;
     switch (opcode) {
@@ -29,8 +31,7 @@ export function executeCpuInstruction(
             return PC;
 
         case ins.PUSH_HL:
-            bus.write16(registers.SP + 1, registers.HL);
-            registers.SP -= 2;
+            stack.push16(registers.HL);
             return PC;
 
         case ins.LD_BC_D16:
