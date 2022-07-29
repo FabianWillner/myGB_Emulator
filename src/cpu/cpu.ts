@@ -5,20 +5,27 @@ import {Cartridge} from '../cart/cartridge.js';
 import {executeCpuInstruction} from './cpu_instruction.js';
 import {GPU} from '../gpu/gpu.js';
 import {Stack} from './stack.js';
+import {getTokenSourceMapRange} from 'typescript';
+import {timeStamp} from 'console';
+import {InterruptHandler} from './interruptHandler.js';
 
 export class CPU {
     public registers: CPURegisters;
-    private halted = false;
+    public halted = false;
     public bus: Bus;
     public gpu: GPU;
     private firstStartup = true;
-    private stack: Stack;
+    public stack: Stack;
+    public masterInterrupt: boolean = true;
+    public shouldEnableInterrupt = false;
+    public interruptHandler: InterruptHandler;
 
     public constructor() {
         this.registers = new CPURegisters();
         this.bus = new Bus(new Cartridge());
         this.gpu = new GPU();
         this.stack = new Stack(this.bus, this.registers);
+        this.interruptHandler = new InterruptHandler(this);
     }
 
     private fetch() {
@@ -32,11 +39,10 @@ export class CPU {
     }
 
     public step() {
+        const interrupt = this.interruptHandler.getCurrentInterrupt();
+        this.interruptHandler.exeInterrupt(interrupt);
         const instruction = this.fetch();
         this.registers.PC = this.execute(instruction);
-        this.gpu.clear();
-        const draw = this.bus.vram.map1;
-        this.gpu.printallTile(draw);
     }
 
     public run() {
@@ -64,12 +70,24 @@ export class CPU {
 
     private execute(instruction: number) {
         this.printInstruction(instruction);
-        return executeCpuInstruction(
-            instruction,
-            this.registers,
-            this.bus,
-            this.stack
-        );
+        return executeCpuInstruction(instruction, this);
+    }
+
+    public emuCycle(cycles: number, enableInterrupt: boolean = false) {
+        // TODO
+        if (cycles > 0) {
+            if (enableInterrupt) {
+                this.shouldEnableInterrupt = false;
+                this.masterInterrupt = true;
+                this.emuCycle(cycles - 1, false);
+                return;
+            } else if (this.shouldEnableInterrupt) {
+                this.emuCycle(cycles - 1, true);
+                return;
+            }
+            this.emuCycle(cycles - 1, enableInterrupt);
+        }
+        return;
     }
 
     private printInstruction(instruction: number) {

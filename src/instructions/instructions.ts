@@ -1,6 +1,8 @@
 const NOP = 0x00;
 const JP_a16 = 0xc3;
 const DI = 0xf3;
+const EI = 0xfb;
+const HALT = 0x76;
 const PUSH_HL = 0xe5;
 const XOR_A = 0xaf;
 
@@ -305,6 +307,8 @@ export {
     JR_NZ_R8,
     RRA,
     OR_B,
+    EI,
+    HALT,
 };
 
 interface Opcodes {

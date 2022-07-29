@@ -1,8 +1,6 @@
-import {Bus} from '../memory/bus';
-import {CPURegisters} from './cpu_registers';
 import * as ins from './../instructions/instructions.js';
 import {ALU} from './alu.js';
-import {Stack} from './stack';
+import {CPU} from './cpu';
 
 function uint8ToInt8(value: number): number {
     const maskedValue = value & 0xff;
@@ -10,12 +8,10 @@ function uint8ToInt8(value: number): number {
     return sign ? -(~maskedValue & 127) - 1 : maskedValue & 127;
 }
 
-export function executeCpuInstruction(
-    opcode: number,
-    registers: CPURegisters,
-    bus: Bus,
-    stack: Stack
-): number {
+export function executeCpuInstruction(opcode: number, cpu: CPU): number {
+    const registers = cpu.registers;
+    const bus = cpu.bus;
+    const stack = cpu.stack;
     let PC = registers.PC + 1;
     switch (opcode) {
         case ins.NOP:
@@ -26,8 +22,18 @@ export function executeCpuInstruction(
             return PC;
 
         case ins.DI:
-            // TODO DISABLE INTERRUPT
-            console.log('Disable Interrupt not implemented yet');
+            cpu.emuCycle(4);
+            cpu.masterInterrupt = false;
+            return PC;
+
+        case ins.HALT:
+            cpu.emuCycle(4);
+            cpu.halt();
+            return PC;
+
+        case ins.EI:
+            cpu.emuCycle(4);
+            cpu.shouldEnableInterrupt;
             return PC;
 
         case ins.PUSH_HL:
