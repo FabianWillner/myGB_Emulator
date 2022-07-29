@@ -1,5 +1,5 @@
-import {Tile} from '../gpu/tile';
-import {MemoryDevice} from './bus';
+import {Tile} from '../gpu/tile.js';
+import {MemoryDevice} from './bus.js';
 
 export class VRam implements MemoryDevice {
     public readonly data: Uint8Array;
@@ -29,7 +29,7 @@ export class VRam implements MemoryDevice {
         this.write8(realAddress, value & 0xff);
     }
 
-    public getTile(address: number): Tile {
+    private getTile(address: number): Tile {
         if ((address & 0xffff) !== 0) {
             throw new Error(
                 'Trying to load a tile that is not on the right starting point'
@@ -42,10 +42,21 @@ export class VRam implements MemoryDevice {
         return new Tile(byteArray);
     }
 
+    public tileAt(index: number, isSprite: boolean): Tile {
+        if (this.bgAndWindowTileDataArea() || isSprite) {
+            return this.getTile(0x8000 - this.offset + index * 16);
+        }
+
+        return this.getTile(0x8800 - this.offset + index * 16);
+    }
+
     public get map1() {
         const tileArray = new Array<Tile>(32 * 32);
         for (let i = 0; i < 32 * 32; i++) {
-            tileArray[i] = this.getTile(0x9800 - this.offset + i);
+            tileArray[i] = this.tileAt(
+                this.read8(0x9800 - this.offset + i),
+                false
+            );
         }
         return tileArray;
     }
@@ -53,8 +64,69 @@ export class VRam implements MemoryDevice {
     public get map2() {
         const tileArray = new Array<Tile>(32 * 32);
         for (let i = 0; i < 32 * 32; i++) {
-            tileArray[i] = this.getTile(0x9c00 - this.offset + i);
+            tileArray[i] = this.tileAt(
+                this.read8(0x9c00 - this.offset + i),
+                false
+            );
         }
         return tileArray;
+    }
+
+    public LCDandPPUEnable(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 7) & 1 ? true : false;
+    }
+
+    public winDowTileMapArea(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 6) & 1 ? true : false;
+    }
+
+    public winEnable(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 5) & 1 ? true : false;
+    }
+
+    public bgAndWindowTileDataArea(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 4) & 1 ? true : false;
+    }
+    public bgTileMapArea(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 3) & 1 ? true : false;
+    }
+
+    public objSize(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 2) & 1 ? true : false;
+    }
+    public objEnable(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 1) & 1 ? true : false;
+    }
+
+    public bgAndWinEnablePriority(): boolean {
+        const value = this.read8(0xff40);
+        return (value >> 0) & 1 ? true : false;
+    }
+
+    public get SCY(): number {
+        return this.read8(0xff42);
+    }
+
+    public get SCX(): number {
+        return this.read8(0xff43);
+    }
+
+    public get LY(): number {
+        return this.read8(0xff44);
+    }
+
+    public get LYC(): number {
+        return this.read8(0xff45);
+    }
+
+    public get WY(): number {
+        return this.read8(0xff4a);
     }
 }
