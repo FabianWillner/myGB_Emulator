@@ -18,6 +18,7 @@ app.use(express.static('build/src/cpu'));
 app.use(express.static('build/src/gpu'));
 app.use(express.static('build/src/memory'));
 app.use(express.static('build/src/instructions'));
+app.use(express.static('roms'));
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

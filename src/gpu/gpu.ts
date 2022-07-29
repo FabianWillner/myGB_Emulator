@@ -1,4 +1,4 @@
-import {Tile} from './tile';
+import {Tile} from './tile.js';
 
 //TODO Scrolling window of the 256x256 pixel background map
 // TODO Window that is ontop of the screen at all times
@@ -30,10 +30,14 @@ export class GPU {
         );
     }
 
-    public printallTile(tile: Tile) {
+    public printallTile(tile: Array<Tile>) {
         for (let i = 0; i < this.screenWidth / this.tileSize; i++) {
             for (let j = 0; j < this.screenHeight / this.tileSize; j++) {
-                this.printTile(tile, i * this.tileSize, j * this.tileSize);
+                this.printTile(
+                    tile[i * 8 + j],
+                    i * this.tileSize,
+                    j * this.tileSize
+                );
             }
         }
     }

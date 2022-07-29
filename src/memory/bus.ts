@@ -1,5 +1,6 @@
 import {Cartridge} from '../cart/cartridge.js';
 import {Memory} from './memory.js';
+import {VRam} from './vRam.js';
 
 // Start	End	Description	Notes
 // 0000	    3FFF	16 KiB ROM bank 00	From cartridge, usually a fixed bank
@@ -42,12 +43,17 @@ enum MemoryRanges {
 
 export class Bus implements MemoryDevice {
     private cartridge: Cartridge;
+    public vram: VRam;
     private memory: Memory;
 
     constructor(cartridge: Cartridge) {
         // TODO
         this.cartridge = cartridge;
-        this.memory = new Memory(0xffff, MemoryRanges.ROM_END + 1);
+        this.vram = new VRam(
+            MemoryRanges.VRAM_END + 1 - MemoryRanges.VRAM_START,
+            MemoryRanges.VRAM_START
+        );
+        this.memory = new Memory(0xffff, MemoryRanges.EXRAM_START);
     }
 
     public read8(address: number): number {
@@ -56,6 +62,10 @@ export class Bus implements MemoryDevice {
         if (u16Address <= MemoryRanges.ROM_END) {
             // Cartridge
             return this.cartridge.read8(u16Address);
+        } else if (u16Address <= MemoryRanges.VRAM_END) {
+            // TODO VRAM
+        } else if (u16Address <= MemoryRanges.EXRAM_END) {
+            return this.cartridge.readRam8(u16Address);
         }
 
         //console.log('Not implemented yet');
@@ -74,6 +84,10 @@ export class Bus implements MemoryDevice {
         if (u16Address <= MemoryRanges.ROM_END) {
             // Cartridge
             return this.cartridge.write8(u16Address, u8Data);
+        } else if (u16Address <= MemoryRanges.VRAM_END) {
+            // TODO VRAM
+        } else if (u16Address <= MemoryRanges.EXRAM_END) {
+            return this.cartridge.write8(u16Address, u8Data);
         }
         return this.memory.write8(u16Address, u8Data);
         //console.log('Not implemented yet');
@@ -84,7 +98,7 @@ export class Bus implements MemoryDevice {
         this.write8(address, value & 0xff);
     }
 
-    public loadCart(cartridge: Cartridge) {
-        this.cartridge = cartridge;
+    public loadCart(cartPath: string) {
+        this.cartridge.loadCart(cartPath);
     }
 }
