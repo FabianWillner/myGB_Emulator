@@ -20,68 +20,24 @@ export class Cartridge implements MemoryDevice {
     public title: number[] = new Array<number>(16); // Upper case ASCII 16 bytes
     public newLicenseeCode: number[] = new Array<number>(2); // 2 byte
 
-    public SGB_FLAG: number; // 1 byte
-    public cartridgeType: number; // 1 byte
-    public ROM_Size: number; // 1 byte
-    public RAM_Size: number; // 1 byte
-    public destinationCode: number; // 1 byte
-    public oldLicenseeCode: number; // 1 byte
-    public versionNumber: number; // 1 byte
-    public headerChecksum: number; // 1 byte
-    public ROM_Checksum: number; // 2 byte
-    public data: Buffer;
+    public SGB_FLAG: number = 0; // 1 byte
+    public cartridgeType: number = 0; // 1 byte
+    public ROM_Size: number = 0; // 1 byte
+    public RAM_Size: number = 0; // 1 byte
+    public destinationCode: number = 0; // 1 byte
+    public oldLicenseeCode: number = 0; // 1 byte
+    public versionNumber: number = 0; // 1 byte
+    public headerChecksum: number = 0; // 1 byte
+    public ROM_Checksum: number = 0; // 2 byte
+    public data: Buffer = Buffer.alloc(0);
+    public cartRam: Uint8Array = new Uint8Array(0xbfff - 0x9fff);
 
-    constructor(path: string) {
-        const data = this.loadCart(path);
-        this.data = data;
-        let i = 0x0100;
-        for (let j = 0; j < 4; j++) {
-            this.entryPoint[j] = data[i];
-            i++;
-        }
-
-        for (let j = 0; j < 48; j++) {
-            this.logo[j] = data[i];
-            i++;
-        }
-
-        for (let j = 0; j < 16; j++) {
-            this.title[j] = data[i];
-            i++;
-        }
-
-        for (let j = 0; j < 2; j++) {
-            this.newLicenseeCode[j] = data[i];
-            i++;
-        }
-
-        this.SGB_FLAG = data[i];
-        i++;
-        this.cartridgeType = data[i];
-        i++;
-        this.ROM_Size = data[i];
-        i++;
-        this.RAM_Size = data[i];
-        i++;
-        this.destinationCode = data[i];
-        i++;
-        this.oldLicenseeCode = data[i];
-        i++;
-        this.versionNumber = data[i];
-        i++;
-        this.headerChecksum = data[i];
-        i++;
-        this.ROM_Checksum = data[i];
-        i++;
-
-        this.printInformation();
-        this.checkChecksum(data);
-    }
+    constructor() {}
 
     private checkChecksum(data: Buffer) {
         let sum = 0;
         for (let i = 0x0134; i <= 0x014c; i++) {
-            sum = sum - data[i] - 1;
+            sum = sum - this.data[i] - 1;
         }
 
         sum = sum & 0xff;
@@ -96,9 +52,51 @@ export class Cartridge implements MemoryDevice {
         }
     }
 
-    private loadCart(stringPath: string) {
+    public loadCart(stringPath: string) {
         const fspath = path.join(__dirname, stringPath);
-        return fs.readFileSync(fspath);
+        this.data = fs.readFileSync(fspath);
+        let i = 0x0100;
+        for (let j = 0; j < 4; j++) {
+            this.entryPoint[j] = this.data[i];
+            i++;
+        }
+
+        for (let j = 0; j < 48; j++) {
+            this.logo[j] = this.data[i];
+            i++;
+        }
+
+        for (let j = 0; j < 16; j++) {
+            this.title[j] = this.data[i];
+            i++;
+        }
+
+        for (let j = 0; j < 2; j++) {
+            this.newLicenseeCode[j] = this.data[i];
+            i++;
+        }
+
+        this.SGB_FLAG = this.data[i];
+        i++;
+        this.cartridgeType = this.data[i];
+        i++;
+        this.ROM_Size = this.data[i];
+        i++;
+        this.RAM_Size = this.data[i];
+        i++;
+        this.destinationCode = this.data[i];
+        i++;
+        this.oldLicenseeCode = this.data[i];
+        i++;
+        this.versionNumber = this.data[i];
+        i++;
+        this.headerChecksum = this.data[i];
+        i++;
+        this.ROM_Checksum = this.data[i];
+        i++;
+
+        this.printInformation();
+        this.checkChecksum(this.data);
     }
 
     public read8(address: number) {
@@ -118,6 +116,25 @@ export class Cartridge implements MemoryDevice {
     public write16(address: number, value: number): void {
         this.write8(address + 1, (value >> 8) & 0xff);
         this.write8(address, value & 0xff);
+    }
+
+    public readRam8(address: number) {
+        return this.cartRam[address];
+    }
+
+    public readRam16(address: number): number {
+        const high = this.cartRam[address + 1];
+        const low = this.cartRam[address];
+        return ((high << 8) & 0xff00) | (low & 0xff);
+    }
+
+    public writeRam8(address: number, byte: number) {
+        this.cartRam[address] = byte & 0xff;
+    }
+
+    public writeRam16(address: number, value: number): void {
+        this.writeRam8(address + 1, (value >> 8) & 0xff);
+        this.writeRam8(address, value & 0xff);
     }
 
     private printInformation() {
