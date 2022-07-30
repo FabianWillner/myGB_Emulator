@@ -90,8 +90,8 @@ export class CPURegisters {
     }
 
     public set AF(value: number) {
-        this.registers.A = (value >> 8) | 0xff;
-        this.registers.F = value | 0xf0; // last 4 bits are always 0 for F
+        this.registers.A = (value >> 8) & 0xff;
+        this.registers.F = value & 0xf0; // last 4 bits are always 0 for F
     }
 
     // BC
@@ -116,8 +116,8 @@ export class CPURegisters {
     }
 
     public set BC(value: number) {
-        this.registers.B = (value >> 8) | 0xff;
-        this.registers.C = value | 0xff;
+        this.registers.B = (value >> 8) & 0xff;
+        this.registers.C = value & 0xff;
     }
 
     // DE
@@ -142,8 +142,8 @@ export class CPURegisters {
     }
 
     public set DE(value: number) {
-        this.registers.D = (value >> 8) | 0xff;
-        this.registers.E = value | 0xff;
+        this.registers.D = (value >> 8) & 0xff;
+        this.registers.E = value & 0xff;
     }
 
     // HL
@@ -168,8 +168,8 @@ export class CPURegisters {
     }
 
     public set HL(value: number) {
-        this.registers.H = (value >> 8) | 0xff;
-        this.registers.L = value | 0xff;
+        this.registers.H = (value >> 8) & 0xff;
+        this.registers.L = value & 0xff;
     }
 
     // SP and PC

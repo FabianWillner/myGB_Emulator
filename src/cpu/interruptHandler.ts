@@ -49,22 +49,27 @@ export class InterruptHandler {
             switch (interrupt) {
                 case InterruptType.VerticalBlank:
                     this.cpu.registers.PC = 0x0040;
+                    this.setInterruptFlags(interrupt, false);
                     this.cpu.emuCycle(1);
                     return;
                 case InterruptType.LCD_STAT:
                     this.cpu.registers.PC = 0x0048;
+                    this.setInterruptFlags(interrupt, false);
                     this.cpu.emuCycle(1);
                     return;
                 case InterruptType.Timer:
                     this.cpu.registers.PC = 0x0050;
+                    this.setInterruptFlags(interrupt, false);
                     this.cpu.emuCycle(1);
                     return;
                 case InterruptType.Serial:
                     this.cpu.registers.PC = 0x0058;
+                    this.setInterruptFlags(interrupt, false);
                     this.cpu.emuCycle(1);
                     return;
                 case InterruptType.Joypad:
                     this.cpu.registers.PC = 0x0060;
+                    this.setInterruptFlags(interrupt, false);
                     this.cpu.emuCycle(1);
                     return;
             }

@@ -1,5 +1,6 @@
 import * as ins from './../instructions/instructions.js';
 import {ALU} from './alu.js';
+import {executeCBInstruction} from './cb_instructions.js';
 import {CPU} from './cpu';
 
 function uint8ToInt8(value: number): number {
@@ -17,6 +18,9 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
         case ins.NOP:
             return PC;
 
+        case ins.CB:
+            return executeCBInstruction(bus.read8(PC), cpu);
+
         case ins.JP_a16:
             PC = bus.read16(PC);
             return PC;
@@ -29,6 +33,21 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
         case ins.HALT:
             cpu.emuCycle(4);
             cpu.halt();
+            return PC;
+
+        case ins.LD_A_HLD:
+            registers.A = bus.read8(registers.HL--);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.LD_A_HLI:
+            registers.A = bus.read8(registers.HL++);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.LD_DE_A:
+            bus.write8(registers.DE, registers.A);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.EI:
@@ -63,7 +82,185 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
+        }
+        case ins.XOR_B: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, registers.B);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.XOR_C: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, registers.C);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.XOR_D: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, registers.D);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.XOR_E: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, registers.E);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.XOR_H: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, registers.H);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.XOR_L: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, registers.L);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.XOR_HL: {
+            const {value, H, Z, N, C} = ALU.xor(
+                registers.A,
+                bus.read8(registers.HL)
+            );
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC;
+        }
+        case ins.XOR_D8: {
+            const {value, H, Z, N, C} = ALU.xor(registers.A, bus.read8(PC));
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC + 1;
+        }
+
+        case ins.ADD_A_A: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.A);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_B: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.B);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_C: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.C);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_D: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.D);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_E: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.E);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_H: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.H);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_L: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, registers.L);
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.ADD_A_HL: {
+            const {value, H, Z, N, C} = ALU.add(
+                registers.A,
+                bus.read8(registers.HL)
+            );
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC;
+        }
+        case ins.ADD_A_D8: {
+            const {value, H, Z, N, C} = ALU.add(registers.A, bus.read8(PC));
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC + 1;
         }
 
         case ins.LD_A_D8:
@@ -96,6 +293,12 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.LD_HLD_A:
             bus.write8(registers.HL--, registers.A);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.LD_HLI_A:
+            bus.write8(registers.HL++, registers.A);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_A_A:
@@ -366,6 +569,125 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             return PC;
         }
+        case ins.CALL_A16:
+            stack.push16(PC + 2);
+            cpu.emuCycle(24);
+            return bus.read16(PC);
+        case ins.CALL_NZ:
+            if (registers.flags.Z) {
+                cpu.emuCycle(12);
+                return PC + 2;
+            }
+            stack.push16(PC + 2);
+            cpu.emuCycle(24);
+            return bus.read16(PC);
+        case ins.CALL_Z:
+            if (!registers.flags.Z) {
+                cpu.emuCycle(12);
+                return PC + 2;
+            }
+            stack.push16(PC + 2);
+            cpu.emuCycle(24);
+            return bus.read16(PC);
+        case ins.CALL_NC:
+            if (registers.flags.C) {
+                cpu.emuCycle(12);
+                return PC + 2;
+            }
+            stack.push16(PC + 2);
+            cpu.emuCycle(24);
+            return bus.read16(PC);
+        case ins.CALL_C:
+            if (!registers.flags.C) {
+                cpu.emuCycle(12);
+                return PC + 2;
+            }
+            stack.push16(PC + 2);
+            cpu.emuCycle(24);
+            return bus.read16(PC);
+
+        case ins.LD_A_DE:
+            registers.A = bus.read8(registers.DE);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.JR_R8:
+            const signedVal = uint8ToInt8(bus.read8(PC));
+            cpu.emuCycle(12);
+            return PC + 1 + signedVal;
+
+        case ins.LD_BC_A:
+            bus.write8(registers.BC, registers.A);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.RET:
+            cpu.emuCycle(8);
+            return stack.pop16();
+        case ins.RET_NZ:
+            cpu.emuCycle(8);
+            if (!registers.flags.Z) {
+                return stack.pop16();
+            }
+            return PC;
+        case ins.RET_Z:
+            cpu.emuCycle(8);
+            if (registers.flags.Z) {
+                return stack.pop16();
+            }
+            return PC;
+        case ins.RET_NC:
+            cpu.emuCycle(8);
+            if (!registers.flags.C) {
+                return stack.pop16();
+            }
+            return PC;
+        case ins.RET_C:
+            cpu.emuCycle(8);
+            if (registers.flags.C) {
+                return stack.pop16();
+            }
+            return PC;
+
+        case ins.POP_AF:
+            registers.AF = stack.pop16();
+            cpu.emuCycle(12);
+            return PC;
+        case ins.POP_BC:
+            registers.BC = stack.pop16();
+            cpu.emuCycle(12);
+            return PC;
+        case ins.POP_DE:
+            registers.DE = stack.pop16();
+            cpu.emuCycle(12);
+            return PC;
+        case ins.POP_HL:
+            registers.HL = stack.pop16();
+            cpu.emuCycle(12);
+            return PC;
+
+        case ins.PUSH_AF:
+            stack.push16(registers.AF);
+            cpu.emuCycle(16);
+            return PC;
+        case ins.PUSH_BC:
+            stack.push16(registers.BC);
+            cpu.emuCycle(16);
+            return PC;
+        case ins.PUSH_DE:
+            stack.push16(registers.DE);
+            cpu.emuCycle(16);
+            return PC;
+
+        case ins.LD_A16_A:
+            bus.write8(bus.read16(PC), registers.A);
+            cpu.emuCycle(16);
+            return PC + 2;
+
+        case ins.LD_A_A16:
+            registers.A = bus.read8(bus.read16(PC));
+            cpu.emuCycle(16);
+            return PC + 2;
 
         case ins.INC_H: {
             const {value, H, Z, N} = ALU.inc(registers.H);
@@ -450,10 +772,42 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.JR_NZ_R8:
             if (registers.flags.Z) {
+                cpu.emuCycle(8);
                 PC++;
             } else {
                 const offset = uint8ToInt8(bus.read8(PC));
                 PC = PC + 1 + offset;
+                cpu.emuCycle(12);
+            }
+            return PC;
+        case ins.JR_Z_R8:
+            if (!registers.flags.Z) {
+                cpu.emuCycle(8);
+                PC++;
+            } else {
+                const offset = uint8ToInt8(bus.read8(PC));
+                PC = PC + 1 + offset;
+                cpu.emuCycle(12);
+            }
+            return PC;
+        case ins.JR_NC_R8:
+            if (registers.flags.C) {
+                cpu.emuCycle(8);
+                PC++;
+            } else {
+                const offset = uint8ToInt8(bus.read8(PC));
+                PC = PC + 1 + offset;
+                cpu.emuCycle(12);
+            }
+            return PC;
+        case ins.JR_C_R8:
+            if (!registers.flags.C) {
+                cpu.emuCycle(8);
+                PC++;
+            } else {
+                const offset = uint8ToInt8(bus.read8(PC));
+                PC = PC + 1 + offset;
+                cpu.emuCycle(12);
             }
             return PC;
 
@@ -467,6 +821,121 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             return PC;
         }
 
+        case ins.AND_A: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.A);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_B: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.B);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_C: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.C);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_D: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.D);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_E: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.E);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_H: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.H);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_L: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, registers.L);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.AND_HL: {
+            const {value, H, Z, N, C} = ALU.and(
+                registers.A,
+                bus.read8(registers.HL)
+            );
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC;
+        }
+        case ins.AND_D8: {
+            const {value, H, Z, N, C} = ALU.and(registers.A, bus.read8(PC));
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC + 1;
+        }
+
+        case ins.OR_A: {
+            const {value, H, Z, N, C} = ALU.or(registers.A, registers.A);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+
         case ins.OR_B: {
             const {value, H, Z, N, C} = ALU.or(registers.A, registers.B);
 
@@ -475,6 +944,62 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.OR_C: {
+            const {value, H, Z, N, C} = ALU.or(registers.A, registers.C);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.OR_D: {
+            const {value, H, Z, N, C} = ALU.or(registers.A, registers.D);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.OR_E: {
+            const {value, H, Z, N, C} = ALU.or(registers.A, registers.E);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.OR_H: {
+            const {value, H, Z, N, C} = ALU.or(registers.A, registers.H);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.OR_L: {
+            const {value, H, Z, N, C} = ALU.or(registers.A, registers.L);
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -934,7 +1459,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             return PC + 1;
 
         case ins.LDH_A_A8:
-            registers.A = bus.read8(0xff00 + bus.read8(PC));
+            registers.A = bus.read8((0xff00 + bus.read8(PC)) & 0xffff);
             return PC + 1;
 
         default: {

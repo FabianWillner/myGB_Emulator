@@ -7,25 +7,28 @@ import {GPU} from '../gpu/gpu.js';
 import {Stack} from './stack.js';
 import {getTokenSourceMapRange} from 'typescript';
 import {timeStamp} from 'console';
-import {InterruptHandler} from './interruptHandler.js';
+import {InterruptHandler, InterruptType} from './interruptHandler.js';
+import {DBG} from '../misc/dbg.js';
 
 export class CPU {
     public registers: CPURegisters;
-    public halted = false;
+    private halted = false;
     public bus: Bus;
-    public gpu: GPU;
-    private firstStartup = true;
+    //public gpu: GPU;
+    public firstStartup = true;
     public stack: Stack;
     public masterInterrupt: boolean = true;
     public shouldEnableInterrupt = false;
     public interruptHandler: InterruptHandler;
+    public dbg: DBG;
 
     public constructor() {
         this.registers = new CPURegisters();
         this.bus = new Bus(new Cartridge());
-        this.gpu = new GPU();
+        //this.gpu = new GPU();
         this.stack = new Stack(this.bus, this.registers);
         this.interruptHandler = new InterruptHandler(this);
+        this.dbg = new DBG(this.bus);
     }
 
     private fetch() {
@@ -56,7 +59,37 @@ export class CPU {
     private internalRun() {
         this.step();
         if (!this.halted) {
-            setImmediate(() => this.run());
+            setImmediate(() => this.internalRun());
+        } else if (this.masterInterrupt) {
+            while (
+                this.interruptHandler.getCurrentInterrupt() ===
+                InterruptType.None
+            ) {
+                // Do nothing
+            }
+            this.start();
+            setImmediate(() => this.internalRun());
+            return;
+        } else {
+            const interrupt = this.interruptHandler.getCurrentInterrupt();
+            if (interrupt === InterruptType.None) {
+                while (
+                    this.interruptHandler.getCurrentInterrupt() ===
+                    InterruptType.None
+                ) {
+                    // Do nothing
+                }
+                this.start();
+                setImmediate(() => this.internalRun());
+                return;
+            } else {
+                // HALT BUG
+                this.start();
+                const instruction = this.fetch();
+                this.registers.PC--;
+                this.registers.PC = this.execute(instruction);
+                setImmediate(() => this.internalRun());
+            }
         }
     }
 
@@ -69,12 +102,16 @@ export class CPU {
     }
 
     private execute(instruction: number) {
-        this.printInstruction(instruction);
+        this.printAll();
+        //this.printInstruction(instruction);
+        //this.dbg.update();
+        //this.dbg.print();
         return executeCpuInstruction(instruction, this);
     }
 
     public emuCycle(cycles: number, enableInterrupt: boolean = false) {
         // TODO
+
         if (cycles > 0) {
             if (enableInterrupt) {
                 this.shouldEnableInterrupt = false;
@@ -98,6 +135,26 @@ export class CPU {
             '$' + this.registers.PC.toString(16),
             '$' + this.bus.read8(this.registers.PC + 1).toString(16),
             '$' + this.bus.read8(this.registers.PC + 2).toString(16)
+        );
+    }
+
+    private printAll() {
+        console.log(
+            'A: %s F: %s B: %s C: %s D: %s E: %s H: %s L: %s SP: %s PC: 00:%s (%s %s %s %s)',
+            toHex(this.registers.A),
+            toHex(this.registers.F),
+            toHex(this.registers.B),
+            toHex(this.registers.C),
+            toHex(this.registers.D),
+            toHex(this.registers.E),
+            toHex(this.registers.H),
+            toHex(this.registers.L),
+            toHex(this.registers.SP, 4),
+            toHex(this.registers.PC, 4),
+            toHex(this.bus.read8(this.registers.PC)),
+            toHex(this.bus.read8(this.registers.PC + 1)),
+            toHex(this.bus.read8(this.registers.PC + 2)),
+            toHex(this.bus.read8(this.registers.PC + 3))
         );
     }
 
@@ -139,4 +196,8 @@ export class CPU {
         this.bus.write8(0xff4b, 0x00);
         this.bus.write8(0xffff, 0x00);
     }
+}
+
+function toHex(value: number, pad: number = 2) {
+    return value.toString(16).padStart(pad, '0').toUpperCase();
 }

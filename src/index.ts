@@ -1,13 +1,15 @@
 import {CPU} from './cpu/cpu.js';
 
-const cpu = new CPU('../../../roms/Tetris.rom');
+const cpu = new CPU();
 
 cpu.registers.PC = 0x0100;
-
-//cpu.run();
+//cpu.loadCart('../../../roms/Tetris.rom');
+cpu.loadCart('../../../roms/dmg-acid2.gb');
+//cpu.loadCart('../../../roms/01-special.gb');
+cpu.registers.PC = 0x0100;
+cpu.run();
 //cpu.halt();
 
-cpu.run();
 //checkRegisters({PC: 0x0034});
 
 const tileData = [

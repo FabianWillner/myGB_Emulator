@@ -95,8 +95,8 @@ export class Cartridge implements MemoryDevice {
         this.ROM_Checksum = this.data[i];
         i++;
 
-        this.printInformation();
-        this.checkChecksum(this.data);
+        //this.printInformation();
+        //this.checkChecksum(this.data);
     }
 
     public read8(address: number) {

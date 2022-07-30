@@ -1,4 +1,9 @@
 export const ALU = {
+    swap(a: number) {
+        const res = ((a & 0xf) << 4) | (a >> 4);
+        return {value: res, Z: res === 0 ? 1 : 0, N: 0, H: 0, C: 0};
+    },
+
     xor(a: number, n: number) {
         const res = a ^ n;
         return {value: res, Z: res === 0 ? 1 : 0, N: 0, H: 0, C: 0};
@@ -43,6 +48,18 @@ export const ALU = {
         };
     },
 
+    rlc(a: number) {
+        const carry = a >> 7;
+        const res = ((a << 1) | carry) & 0xff;
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: carry,
+        };
+    },
+
     sub(a: number, n: number) {
         const sub = a - n;
         const halfCarry = (((a & 0xf) - (n & 0xf)) >> 4) & 1;
@@ -53,6 +70,19 @@ export const ALU = {
             N: 1,
             H: halfCarry,
             C: (sub >> 8) & 1,
+        };
+    },
+    add(a: number, b: number) {
+        const newValue = a + b;
+        const maskedValue = newValue & 0xff;
+        const halfCarry = ((a & 0xf) + (b & 0xf)) >> 4;
+
+        return {
+            value: maskedValue,
+            Z: maskedValue === 0 ? 1 : 0,
+            N: 0,
+            H: halfCarry,
+            C: newValue !== maskedValue ? 1 : 0,
         };
     },
 
@@ -79,6 +109,18 @@ export const ALU = {
             N: 0,
             H: halfCarry,
             C: sum !== maskedValue ? 1 : 0,
+        };
+    },
+
+    and(a: number, n: number) {
+        const res = a & n;
+
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 1,
+            C: 0,
         };
     },
 };

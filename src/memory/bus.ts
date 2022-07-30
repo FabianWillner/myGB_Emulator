@@ -1,5 +1,7 @@
 import {Cartridge} from '../cart/cartridge.js';
+import {IO} from './io.js';
 import {Memory} from './memory.js';
+import {RAM} from './ram.js';
 import {VRam} from './vRam.js';
 
 // Start	End	Description	Notes
@@ -45,6 +47,9 @@ export class Bus implements MemoryDevice {
     private cartridge: Cartridge;
     public vram: VRam;
     private memory: Memory;
+    private io: IO;
+    private ram: RAM;
+    private interruptEnable: number = 0;
 
     constructor(cartridge: Cartridge) {
         // TODO
@@ -53,7 +58,9 @@ export class Bus implements MemoryDevice {
             MemoryRanges.VRAM_END + 1 - MemoryRanges.VRAM_START,
             MemoryRanges.VRAM_START
         );
-        this.memory = new Memory(0xffff, MemoryRanges.EXRAM_START);
+        this.memory = new Memory(0xffff);
+        this.io = new IO();
+        this.ram = new RAM();
     }
 
     public read8(address: number): number {
@@ -63,9 +70,19 @@ export class Bus implements MemoryDevice {
             // Cartridge
             return this.cartridge.read8(u16Address);
         } else if (u16Address <= MemoryRanges.VRAM_END) {
-            // TODO VRAM
+            return this.ram.read8(u16Address);
         } else if (u16Address <= MemoryRanges.EXRAM_END) {
             return this.cartridge.readRam8(u16Address);
+        } else if (u16Address <= MemoryRanges.WRAM_END) {
+            return this.ram.read8(u16Address);
+        } else if (u16Address <= MemoryRanges.OAM_END) {
+            return 0;
+        } else if (u16Address <= MemoryRanges.IO_END) {
+            return this.io.read8(u16Address);
+        } else if (u16Address <= MemoryRanges.HRAM_END) {
+            return this.ram.read8(u16Address);
+        } else if (u16Address <= MemoryRanges.IE) {
+            return this.interruptEnable;
         }
 
         //console.log('Not implemented yet');
@@ -80,14 +97,27 @@ export class Bus implements MemoryDevice {
     public write8(address: number, value: number): void {
         const u16Address = address & 0xffff;
         const u8Data = value & 0xff;
-        // TODO
+        if (u16Address === 0xff44) {
+            console.log(u8Data);
+        }
         if (u16Address <= MemoryRanges.ROM_END) {
             // Cartridge
             return this.cartridge.write8(u16Address, u8Data);
         } else if (u16Address <= MemoryRanges.VRAM_END) {
-            // TODO VRAM
+            return this.ram.write8(u16Address, u8Data);
         } else if (u16Address <= MemoryRanges.EXRAM_END) {
             return this.cartridge.write8(u16Address, u8Data);
+        } else if (u16Address <= MemoryRanges.WRAM_END) {
+            return this.ram.write8(u16Address, u8Data);
+        } else if (u16Address <= MemoryRanges.OAM_END) {
+            return;
+        } else if (u16Address <= MemoryRanges.IO_END) {
+            return this.io.write8(u16Address, u8Data);
+        } else if (u16Address <= MemoryRanges.HRAM_END) {
+            return this.ram.write8(u16Address, u8Data);
+        } else if (u16Address <= MemoryRanges.IE) {
+            this.interruptEnable = u8Data;
+            return;
         }
         return this.memory.write8(u16Address, u8Data);
         //console.log('Not implemented yet');

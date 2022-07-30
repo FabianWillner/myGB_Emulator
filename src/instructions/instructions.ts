@@ -5,6 +5,8 @@ const EI = 0xfb;
 const HALT = 0x76;
 const PUSH_HL = 0xe5;
 const XOR_A = 0xaf;
+const LD_A_HLD = 0x3a;
+const CB = 0xcb;
 
 const RLCA = 0x07;
 
@@ -164,9 +166,132 @@ const OR_B = 0xb0;
 
 const LDH_A8_A = 0xe0;
 const LDH_A_A8 = 0xf0;
+const LD_A_HLI = 0x2a;
+const LD_DE_A = 0x12;
+const LD_A16_A = 0xea;
+const LD_A_A16 = 0xfa;
+const CALL_A16 = 0xcd;
+const JR_R8 = 0x18;
+
+const LD_BC_A = 0x02;
+const RET = 0xc9;
+const RET_NZ = 0xc0;
+const RET_Z = 0xc8;
+const RET_NC = 0xd0;
+const RET_C = 0xd8;
+const POP_AF = 0xf1;
+const POP_BC = 0xc1;
+const POP_DE = 0xd1;
+const POP_HL = 0xe1;
+const PUSH_AF = 0xf5;
+const PUSH_BC = 0xc5;
+const PUSH_DE = 0xd5;
+const OR_A = 0xb7;
+const OR_C = 0xb1;
+const OR_D = 0xb2;
+const OR_E = 0xb3;
+const OR_H = 0xb4;
+const OR_L = 0xb5;
+const JR_Z_R8 = 0x28;
+const JR_NC_R8 = 0x30;
+const JR_C_R8 = 0x38;
+const AND_A = 0xa7;
+const AND_B = 0xa0;
+const AND_C = 0xa1;
+const AND_D = 0xa2;
+const AND_E = 0xa3;
+const AND_H = 0xa4;
+const AND_L = 0xa5;
+const AND_HL = 0xa6;
+const AND_D8 = 0xe6;
+const CALL_NZ = 0xc4;
+const CALL_Z = 0xcc;
+const CALL_NC = 0xd4;
+const CALL_C = 0xdc;
+const LD_A_DE = 0x1a;
+const XOR_B = 0xa8;
+const XOR_C = 0xa9;
+const XOR_D = 0xaa;
+const XOR_E = 0xab;
+const XOR_H = 0xac;
+const XOR_L = 0xad;
+const XOR_HL = 0xae;
+const XOR_D8 = 0xee;
+const LD_HLI_A = 0x22;
+const ADD_A_A = 0x87;
+const ADD_A_B = 0x80;
+const ADD_A_C = 0x81;
+const ADD_A_D = 0x82;
+const ADD_A_E = 0x83;
+const ADD_A_H = 0x84;
+const ADD_A_L = 0x85;
+const ADD_A_HL = 0x86;
+const ADD_A_D8 = 0xc6;
 
 export {
     NOP,
+    CB,
+    XOR_HL,
+    XOR_D8,
+    ADD_A_A,
+    ADD_A_B,
+    ADD_A_C,
+    ADD_A_D,
+    ADD_A_E,
+    ADD_A_H,
+    ADD_A_L,
+    ADD_A_HL,
+    ADD_A_D8,
+    LD_HLI_A,
+    XOR_B,
+    XOR_C,
+    XOR_D,
+    XOR_E,
+    XOR_H,
+    XOR_L,
+    LD_A_DE,
+    CALL_NZ,
+    CALL_Z,
+    CALL_NC,
+    CALL_C,
+    AND_A,
+    AND_HL,
+    AND_D8,
+    AND_B,
+    AND_C,
+    AND_D,
+    AND_E,
+    AND_H,
+    AND_L,
+    JR_Z_R8,
+    JR_NC_R8,
+    JR_C_R8,
+    OR_A,
+    OR_C,
+    OR_D,
+    OR_E,
+    OR_H,
+    OR_L,
+    PUSH_AF,
+    PUSH_BC,
+    PUSH_DE,
+    POP_AF,
+    POP_BC,
+    POP_DE,
+    POP_HL,
+    RET,
+    RET_NZ,
+    RET_Z,
+    RET_NC,
+    RET_C,
+    JR_R8,
+    LD_BC_A,
+    CALL_A16,
+    LD_A16_A,
+    LD_A_A16,
+    LD_DE_A,
+    LD_A_HLI,
+    LD_A_HLD,
     LDH_A8_A,
     LDH_A_A8,
     SUB_A,
