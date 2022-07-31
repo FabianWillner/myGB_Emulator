@@ -9,6 +9,51 @@ export const ALU = {
         return {value: res, Z: res === 0 ? 1 : 0, N: 0, H: 0, C: 0};
     },
 
+    rl(a: number, c: number) {
+        const res = ((a << 1) | (c & 1)) & 0xff;
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: a >> 7,
+        };
+    },
+
+    rr(a: number, c: number) {
+        const res = ((a >> 1) | ((c & 1) << 7)) & 0xff;
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: a & 1,
+        };
+    },
+
+    sla(a: number) {
+        const res = (a << 1) & 0xff;
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: a >> 7,
+        };
+    },
+
+    rrc(a: number) {
+        const carry = a & 1;
+        const res = (a >> 1) | (carry << 7);
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: carry,
+        };
+    },
+
     inc(a: number) {
         const res = (a + 1) & 0xff;
         const halfCarry = ((a & 0xf) + 1) >> 4;
@@ -25,17 +70,6 @@ export const ALU = {
         return {value: res, Z: res === 0 ? 1 : 0, N: 1, H: halfCarry};
     },
 
-    rr(a: number, c: number) {
-        const res = ((a >> 1) | ((c & 1) << 7)) & 0xff;
-        return {
-            value: res,
-            Z: res === 0 ? 1 : 0,
-            N: 0,
-            H: 0,
-            C: a & 1,
-        };
-    },
-
     or(a: number, n: number) {
         const res = a | n;
 
@@ -45,6 +79,36 @@ export const ALU = {
             N: 0,
             H: 0,
             C: 0,
+        };
+    },
+
+    srl(a: number) {
+        const res = (a >> 1) & 0xff;
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: a & 1,
+        };
+    },
+
+    bit(bit: number, a: number) {
+        return {
+            Z: (~a >> bit) & 1,
+            N: 0,
+            H: 1,
+        };
+    },
+
+    sra(a: number) {
+        const res = ((a >> 1) | (a & 0x80)) & 0xff;
+        return {
+            value: res,
+            Z: res === 0 ? 1 : 0,
+            N: 0,
+            H: 0,
+            C: a & 1,
         };
     },
 
@@ -121,6 +185,18 @@ export const ALU = {
             N: 0,
             H: 1,
             C: 0,
+        };
+    },
+
+    res(bit: number, a: number) {
+        return {
+            value: a & ~(1 << bit),
+        };
+    },
+
+    set(bit: number, a: number) {
+        return {
+            value: a | (1 << bit),
         };
     },
 };
