@@ -9,7 +9,7 @@ export class DBG {
 
     update() {
         if (this.bus.read8(0xff02) !== 0) {
-            console.log();
+            console.log(this.bus.read8(0xff02));
         }
 
         if (this.bus.read8(0xff02) === 0x81) {

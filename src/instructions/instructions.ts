@@ -1,5 +1,6 @@
 const NOP = 0x00;
 const JP_a16 = 0xc3;
+const JP_HL = 0xe9;
 const DI = 0xf3;
 const EI = 0xfb;
 const HALT = 0x76;
@@ -14,6 +15,7 @@ const ADD_HL_BC = 0x09;
 const ADD_HL_DE = 0x19;
 const ADD_HL_HL = 0x29;
 const ADD_HL_SP = 0x39;
+const ADD_SP_R8 = 0xe8;
 
 const LD_BC_D16 = 0x01;
 const LD_DE_D16 = 0x11;
@@ -123,6 +125,11 @@ const DEC_D = 0x15;
 const DEC_E = 0x1d;
 const DEC_H = 0x25;
 const DEC_L = 0x2d;
+const DEC_AHL = 0x35;
+const DEC_SP = 0x3b;
+const DEC_HL = 0x2b;
+const DEC_DE = 0x1b;
+const DEC_BC = 0x0b;
 
 const CP_A = 0xbf;
 const CP_B = 0xb8;
@@ -162,7 +169,6 @@ const SUB_HL = 0x96;
 const SUB_D8 = 0xd6;
 
 const RRA = 0x1f;
-const OR_B = 0xb0;
 
 const LDH_A8_A = 0xe0;
 const LDH_A_A8 = 0xf0;
@@ -187,11 +193,14 @@ const PUSH_AF = 0xf5;
 const PUSH_BC = 0xc5;
 const PUSH_DE = 0xd5;
 const OR_A = 0xb7;
+const OR_B = 0xb0;
 const OR_C = 0xb1;
 const OR_D = 0xb2;
 const OR_E = 0xb3;
 const OR_H = 0xb4;
 const OR_L = 0xb5;
+const OR_HL = 0xb6;
+const OR_D8 = 0xf6;
 const JR_Z_R8 = 0x28;
 const JR_NC_R8 = 0x30;
 const JR_C_R8 = 0x38;
@@ -227,10 +236,73 @@ const ADD_A_H = 0x84;
 const ADD_A_L = 0x85;
 const ADD_A_HL = 0x86;
 const ADD_A_D8 = 0xc6;
+const DAA = 0x27;
+const CPL = 0x2f;
+const LD_SP_HL = 0xf9;
+const LD_HL_SP_R8 = 0xf8;
+const SBC_A_A = 0x9f;
+const SBC_A_B = 0x98;
+const SBC_A_C = 0x99;
+const SBC_A_D = 0x9a;
+const SBC_A_E = 0x9b;
+const SBC_A_H = 0x9c;
+const SBC_A_L = 0x9d;
+const SBC_A_HL = 0x9e;
+const SBC_A_d8 = 0xde;
+const LD_A_AC = 0xf2;
+const LD_AC_A = 0xe2;
+const LD_A_BC = 0x0a;
+const RRCA = 0x0f;
+const STOP = 0x10;
+const RLA = 0x17;
+const INC_AHL = 0x34;
+const SCF = 0x37;
+const CCF = 0x3f;
+const RST_00 = 0xc7;
+const RST_08 = 0xcf;
+const RST_10 = 0xd7;
+const RST_18 = 0xdf;
+const RST_20 = 0xe7;
+const RST_28 = 0xef;
+const RST_30 = 0xf7;
+const RST_38 = 0xff;
+const RETI = 0xd9;
 
 export {
     NOP,
     CB,
+    RETI,
+    RST_00,
+    RST_08,
+    RST_10,
+    RST_18,
+    RST_20,
+    RST_28,
+    RST_30,
+    RST_38,
+    LD_A_AC,
+    INC_AHL,
+    SCF,
+    CCF,
+    RRCA,
+    RLA,
+    STOP,
+    LD_A_BC,
+    LD_AC_A,
+    SBC_A_A,
+    SBC_A_B,
+    SBC_A_C,
+    SBC_A_D,
+    SBC_A_E,
+    SBC_A_H,
+    SBC_A_L,
+    SBC_A_HL,
+    SBC_A_d8,
+    CPL,
+    DAA,
+    LD_SP_HL,
+    LD_HL_SP_R8,
+    JP_HL,
     XOR_HL,
     XOR_D8,
     ADD_A_A,
@@ -242,6 +314,7 @@ export {
     ADD_A_L,
     ADD_A_HL,
     ADD_A_D8,
+    ADD_SP_R8,
     LD_HLI_A,
     XOR_B,
     XOR_C,
@@ -272,6 +345,8 @@ export {
     OR_E,
     OR_H,
     OR_L,
+    OR_HL,
+    OR_D8,
     PUSH_AF,
     PUSH_BC,
     PUSH_DE,
@@ -420,6 +495,11 @@ export {
     DEC_E,
     DEC_H,
     DEC_L,
+    DEC_HL,
+    DEC_SP,
+    DEC_AHL,
+    DEC_BC,
+    DEC_DE,
     CP_A,
     CP_B,
     CP_C,

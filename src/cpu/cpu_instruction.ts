@@ -25,12 +25,54 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             PC = bus.read16(PC);
             return PC;
 
+        case ins.JP_HL:
+            return registers.HL;
+
+        case ins.LD_A_AC:
+            registers.A = bus.read8(0xff00 + registers.C);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.LD_AC_A:
+            bus.write8(0xff00 + registers.C, registers.A);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.DAA: {
+            const {value, Z, H, C} = ALU.daa(
+                registers.A,
+                registers.flags.N,
+                registers.flags.H,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.H = 0;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+
+        case ins.LD_SP_HL:
+            registers.SP = registers.HL;
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.CPL:
+            registers.A = registers.A ^ 0xff;
+            registers.flags.N = 1;
+            registers.flags.H = 1;
+            cpu.emuCycle(4);
+            return PC;
+
         case ins.DI:
             cpu.emuCycle(4);
             cpu.masterInterrupt = false;
             return PC;
 
         case ins.HALT:
+            console.log('Halt is triggered');
             cpu.emuCycle(4);
             cpu.halt();
             return PC;
@@ -260,6 +302,36 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.C = C;
             cpu.emuCycle(8);
+            return PC + 1;
+        }
+
+        case ins.ADD_SP_R8: {
+            const signedVal = uint8ToInt8(bus.read8(PC));
+            const value = (registers.SP + signedVal) & 0xffff;
+            const H = ((registers.SP & 0xf) + (signedVal & 0xf)) >> 4;
+            const C = ((registers.SP & 0xff) + (signedVal & 0xff)) >> 8;
+
+            registers.SP = value;
+            registers.flags.H = H;
+            registers.flags.Z = 0;
+            registers.flags.N = 0;
+            registers.flags.C = C;
+            cpu.emuCycle(16);
+            return PC + 1;
+        }
+
+        case ins.LD_HL_SP_R8: {
+            const signedVal = uint8ToInt8(bus.read8(PC));
+            const value = (registers.SP + signedVal) & 0xffff;
+            const H = ((registers.SP & 0xf) + (signedVal & 0xf)) >> 4;
+            const C = ((registers.SP & 0xff) + (signedVal & 0xff)) >> 8;
+
+            registers.HL = value;
+            registers.flags.H = H;
+            registers.flags.Z = 0;
+            registers.flags.N = 0;
+            registers.flags.C = C;
+            cpu.emuCycle(12);
             return PC + 1;
         }
 
@@ -522,7 +594,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             return PC;
 
         case ins.LD_L_HL:
-            registers.H = bus.read8(registers.HL);
+            registers.L = bus.read8(registers.HL);
             return PC;
 
         case ins.INC_A: {
@@ -530,7 +602,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.A = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
 
@@ -539,7 +611,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.B = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
 
@@ -548,7 +620,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.C = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
 
@@ -557,7 +629,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.D = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
 
@@ -566,48 +638,91 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.E = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
-        case ins.CALL_A16:
+        case ins.CALL_A16: {
+            const newAddr = bus.read16(PC);
             stack.push16(PC + 2);
             cpu.emuCycle(24);
-            return bus.read16(PC);
-        case ins.CALL_NZ:
+            return newAddr;
+        }
+
+        case ins.CALL_NZ: {
             if (registers.flags.Z) {
                 cpu.emuCycle(12);
                 return PC + 2;
             }
+            const newAddr = bus.read16(PC);
             stack.push16(PC + 2);
             cpu.emuCycle(24);
-            return bus.read16(PC);
-        case ins.CALL_Z:
+            return newAddr;
+        }
+
+        case ins.CALL_Z: {
             if (!registers.flags.Z) {
                 cpu.emuCycle(12);
                 return PC + 2;
             }
+            const newAddr = bus.read16(PC);
             stack.push16(PC + 2);
             cpu.emuCycle(24);
-            return bus.read16(PC);
-        case ins.CALL_NC:
+            return newAddr;
+        }
+
+        case ins.CALL_NC: {
             if (registers.flags.C) {
                 cpu.emuCycle(12);
                 return PC + 2;
             }
+            const newAddr = bus.read16(PC);
             stack.push16(PC + 2);
             cpu.emuCycle(24);
-            return bus.read16(PC);
-        case ins.CALL_C:
+            return newAddr;
+        }
+        case ins.CALL_C: {
             if (!registers.flags.C) {
                 cpu.emuCycle(12);
                 return PC + 2;
             }
+            const newAddr = bus.read16(PC);
             stack.push16(PC + 2);
             cpu.emuCycle(24);
-            return bus.read16(PC);
+            return newAddr;
+        }
+
+        case ins.RST_00:
+            stack.push16(PC);
+            return 0x0000;
+        case ins.RST_08:
+            stack.push16(PC);
+            return 0x0008;
+        case ins.RST_10:
+            stack.push16(PC);
+            return 0x0010;
+        case ins.RST_18:
+            stack.push16(PC);
+            return 0x0018;
+        case ins.RST_20:
+            stack.push16(PC);
+            return 0x0020;
+        case ins.RST_28:
+            stack.push16(PC);
+            return 0x0028;
+        case ins.RST_30:
+            stack.push16(PC);
+            return 0x0030;
+        case ins.RST_38:
+            stack.push16(PC);
+            return 0x0038;
 
         case ins.LD_A_DE:
             registers.A = bus.read8(registers.DE);
+            cpu.emuCycle(8);
+            return PC;
+
+        case ins.LD_A_BC:
+            registers.A = bus.read8(registers.BC);
             cpu.emuCycle(8);
             return PC;
 
@@ -623,6 +738,11 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.RET:
             cpu.emuCycle(8);
+            return stack.pop16();
+
+        case ins.RETI:
+            cpu.emuCycle(8);
+            cpu.start();
             return stack.pop16();
         case ins.RET_NZ:
             cpu.emuCycle(8);
@@ -694,7 +814,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.H = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
 
@@ -703,7 +823,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.L = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             return PC;
         }
 
@@ -712,7 +832,8 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.A = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -721,7 +842,8 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.B = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -730,7 +852,8 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.C = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -739,7 +862,8 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.D = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -748,7 +872,8 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.E = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -757,7 +882,8 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.H = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -766,7 +892,45 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.L = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
+            cpu.emuCycle(4);
+            return PC;
+        }
+
+        case ins.DEC_AHL: {
+            const {value, H, Z, N} = ALU.dec(bus.read8(registers.HL));
+            bus.write8(registers.HL, value);
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = 1;
+            cpu.emuCycle(12);
+            return PC;
+        }
+
+        case ins.DEC_SP: {
+            const {value} = ALU.dec16(registers.SP);
+            registers.SP = value;
+            cpu.emuCycle(8);
+            return PC;
+        }
+        case ins.DEC_BC: {
+            const {value} = ALU.dec16(registers.BC);
+            registers.BC = value;
+            cpu.emuCycle(8);
+            return PC;
+        }
+
+        case ins.DEC_DE: {
+            const {value} = ALU.dec16(registers.DE);
+            registers.DE = value;
+            cpu.emuCycle(8);
+            return PC;
+        }
+
+        case ins.DEC_HL: {
+            const {value} = ALU.dec16(registers.HL);
+            registers.HL = value;
+            cpu.emuCycle(8);
             return PC;
         }
 
@@ -810,6 +974,36 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
                 cpu.emuCycle(12);
             }
             return PC;
+
+        case ins.STOP:
+            // TODO but I will try
+            cpu.emuCycle(4);
+            return PC + 1;
+
+        case ins.RRCA: {
+            const carry = registers.A & 1;
+            const shifted = registers.A >> 1;
+
+            registers.A = (shifted & 0xff) | (carry << 7);
+            registers.flags.Z = 0;
+            registers.flags.N = 0;
+            registers.flags.H = 0;
+            registers.flags.C = carry;
+            cpu.emuCycle(4);
+            return PC;
+        }
+
+        case ins.RLA: {
+            const {value, C} = ALU.rl(registers.A, registers.flags.C);
+
+            registers.A = value;
+            registers.flags.Z = 0;
+            registers.flags.N = 0;
+            registers.flags.H = 0;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
 
         case ins.RRA: {
             const {value, C} = ALU.rr(registers.A, registers.flags.C);
@@ -1003,6 +1197,170 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             return PC;
         }
 
+        case ins.OR_HL: {
+            const {value, H, Z, N, C} = ALU.or(
+                registers.A,
+                bus.read8(registers.HL)
+            );
+
+            registers.A = value;
+            registers.flags.H = H;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC;
+        }
+
+        case ins.OR_D8: {
+            const {value, Z} = ALU.or(registers.A, bus.read8(PC));
+            console.log(value);
+
+            registers.A = value;
+            registers.flags.H = 0;
+            registers.flags.Z = Z;
+            registers.flags.N = 0;
+            registers.flags.C = 0;
+            cpu.emuCycle(8);
+            return PC + 1;
+        }
+
+        case ins.SBC_A_A: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.A,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_B: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.B,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_C: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.C,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_D: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.D,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_E: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.E,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_H: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.H,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_L: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                registers.L,
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(4);
+            return PC;
+        }
+        case ins.SBC_A_HL: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                bus.read8(registers.HL),
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC;
+        }
+        case ins.SBC_A_d8: {
+            const {value, Z, N, H, C} = ALU.sbc(
+                registers.A,
+                bus.read8(PC),
+                registers.flags.C
+            );
+
+            registers.A = value;
+            registers.flags.Z = Z;
+            registers.flags.N = N;
+            registers.flags.H = H;
+            registers.flags.C = C;
+            cpu.emuCycle(8);
+            return PC + 1;
+        }
+
         case ins.CP_A: {
             const {H, Z, N, C} = ALU.sub(registers.A, registers.A);
             registers.flags.H = H;
@@ -1088,7 +1446,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             const {value, N, H, C} = ALU.add16(registers.HL, registers.BC);
 
             registers.HL = value;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
             return PC;
@@ -1098,7 +1456,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             const {value, N, H, C} = ALU.add16(registers.HL, registers.DE);
 
             registers.HL = value;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
             return PC;
@@ -1108,17 +1466,17 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             const {value, N, H, C} = ALU.add16(registers.HL, registers.HL);
 
             registers.HL = value;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
             return PC;
         }
 
         case ins.ADD_HL_SP: {
-            const {value, N, H, C} = ALU.add16(registers.HL, registers.SP);
+            const {value, H, C} = ALU.add16(registers.HL, registers.SP);
 
             registers.HL = value;
-            registers.flags.N = N;
+            registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
             return PC;
@@ -1207,23 +1565,56 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
         case ins.INC_BC: {
             const {value} = ALU.inc16(registers.BC);
             registers.BC = value;
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.INC_DE: {
             const {value} = ALU.inc16(registers.DE);
             registers.DE = value;
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.INC_HL: {
             const {value} = ALU.inc16(registers.HL);
             registers.HL = value;
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.INC_BC: {
             const {value} = ALU.inc16(registers.BC);
             registers.BC = value;
+            cpu.emuCycle(8);
             return PC;
         }
+
+        case ins.INC_SP: {
+            registers.SP++;
+            cpu.emuCycle(8);
+            return PC;
+        }
+
+        case ins.INC_AHL: {
+            const {value, Z, H} = ALU.inc(bus.read8(registers.HL));
+            bus.write8(registers.HL, value);
+            registers.flags.Z = Z;
+            registers.flags.N = 0;
+            registers.flags.H = H;
+            cpu.emuCycle(12);
+            return PC;
+        }
+        case ins.SCF:
+            registers.flags.C = 1;
+            registers.flags.N = 0;
+            registers.flags.H = 0;
+            cpu.emuCycle(4);
+            return PC;
+
+        case ins.CCF:
+            registers.flags.C = registers.flags.C ? 0 : 1;
+            registers.flags.N = 0;
+            registers.flags.H = 0;
+            cpu.emuCycle(4);
+            return PC;
 
         case ins.ADC_A_A: {
             const {value, Z, N, H, C} = ALU.adc(
@@ -1464,9 +1855,13 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         default: {
             console.log(registers);
-            throw new Error(
-                'Instruction not implemented $' + opcode.toString(16)
-            );
+            if (opcode) {
+                throw new Error(
+                    'Instruction not implemented $' + opcode.toString(16)
+                );
+            } else {
+                throw new Error('unknown opcode prolly undefined ' + opcode);
+            }
         }
     }
 }

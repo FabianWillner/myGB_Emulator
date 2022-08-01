@@ -10,7 +10,7 @@ export class RAM implements MemoryDevice {
             return this.vram[(address - 0x8000) & 0xffff];
         } else if (address < 0xe000) {
             return this.wram[(address - 0xc000) & 0xffff];
-        } else if (address < 0xe000) {
+        } else if (address < 0xffff) {
             return this.hram[(address - 0xff80) & 0xffff];
         }
         return 0;
@@ -23,7 +23,7 @@ export class RAM implements MemoryDevice {
         } else if (address < 0xe000) {
             this.wram[(address - 0xc000) & 0xffff] = byte;
             return;
-        } else if (address < 0xe000) {
+        } else if (address < 0xffff) {
             this.hram[(address - 0xff80) & 0xffff] = byte;
             return;
         }

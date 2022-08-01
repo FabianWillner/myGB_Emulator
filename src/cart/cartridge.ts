@@ -29,7 +29,7 @@ export class Cartridge implements MemoryDevice {
     public versionNumber: number = 0; // 1 byte
     public headerChecksum: number = 0; // 1 byte
     public ROM_Checksum: number = 0; // 2 byte
-    public data: Buffer = Buffer.alloc(0);
+    public data: Buffer = Buffer.alloc(0x8000);
     public cartRam: Uint8Array = new Uint8Array(0xbfff - 0x9fff);
 
     constructor() {}

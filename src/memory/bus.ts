@@ -34,6 +34,8 @@ enum MemoryRanges {
     EXRAM_END = 0xbfff,
     WRAM_START = 0xc000,
     WRAM_END = 0xdfff,
+    ECHO_RAM_START = 0xe000,
+    ECHO_RAM_END = 0xfdff,
     OAM_START = 0xfe00,
     OAM_END = 0xfe9f,
     IO_START = 0xff00,
@@ -44,7 +46,7 @@ enum MemoryRanges {
 }
 
 export class Bus implements MemoryDevice {
-    private cartridge: Cartridge;
+    public cartridge: Cartridge;
     public vram: VRam;
     private memory: Memory;
     private io: IO;
@@ -72,11 +74,17 @@ export class Bus implements MemoryDevice {
         } else if (u16Address <= MemoryRanges.VRAM_END) {
             return this.ram.read8(u16Address);
         } else if (u16Address <= MemoryRanges.EXRAM_END) {
-            return this.cartridge.readRam8(u16Address);
+            return this.cartridge.readRam8(
+                u16Address - MemoryRanges.EXRAM_START
+            );
         } else if (u16Address <= MemoryRanges.WRAM_END) {
             return this.ram.read8(u16Address);
+        } else if (u16Address <= MemoryRanges.ECHO_RAM_END) {
+            // should be non addressable
+            return this.memory.read8(u16Address);
         } else if (u16Address <= MemoryRanges.OAM_END) {
-            return 0;
+            // TODO
+            return this.memory.read8(u16Address);
         } else if (u16Address <= MemoryRanges.IO_END) {
             return this.io.read8(u16Address);
         } else if (u16Address <= MemoryRanges.HRAM_END) {
@@ -97,19 +105,25 @@ export class Bus implements MemoryDevice {
     public write8(address: number, value: number): void {
         const u16Address = address & 0xffff;
         const u8Data = value & 0xff;
-        if (u16Address === 0xff44) {
-            console.log(u8Data);
-        }
         if (u16Address <= MemoryRanges.ROM_END) {
             // Cartridge
             return this.cartridge.write8(u16Address, u8Data);
         } else if (u16Address <= MemoryRanges.VRAM_END) {
             return this.ram.write8(u16Address, u8Data);
         } else if (u16Address <= MemoryRanges.EXRAM_END) {
-            return this.cartridge.write8(u16Address, u8Data);
+            return this.cartridge.writeRam8(
+                u16Address - MemoryRanges.EXRAM_START,
+                u8Data
+            );
         } else if (u16Address <= MemoryRanges.WRAM_END) {
             return this.ram.write8(u16Address, u8Data);
+        } else if (u16Address <= MemoryRanges.ECHO_RAM_END) {
+            // should be non addressable
+            this.memory.write8(u16Address, u8Data);
+            return;
         } else if (u16Address <= MemoryRanges.OAM_END) {
+            // TODO
+            this.memory.write8(u16Address, u8Data);
             return;
         } else if (u16Address <= MemoryRanges.IO_END) {
             return this.io.write8(u16Address, u8Data);

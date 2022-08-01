@@ -10,7 +10,8 @@
         "moduleResolution": "node",
         "strict": true,
         "allowSyntheticDefaultImports": true,
-        "lib": ["DOM"]
+        "lib": ["DOM"],
+        "resolveJsonModule": true
     },
     "include": ["src/**/*.ts", "test/**/*.ts"]
 }

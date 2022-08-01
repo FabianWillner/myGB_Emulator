@@ -2,11 +2,17 @@ import {CPU} from './cpu/cpu.js';
 
 const cpu = new CPU();
 
-cpu.registers.PC = 0x0100;
+//cpu.registers.PC = 0x0100;
 //cpu.loadCart('../../../roms/Tetris.rom');
-cpu.loadCart('../../../roms/dmg-acid2.gb');
+//cpu.loadCart('../../../roms/dmg-acid2.gb');
 //cpu.loadCart('../../../roms/01-special.gb');
+cpu.loadCart('../../../roms/03-op sp,hl.gb');
+//cpu.loadCart('../../../roms/04-op r,imm.gb');
+//cpu.loadCart('../../../roms/06-ld r,r.gb');
+//cpu.loadCart('../../../roms/07-jr,jp,call,ret,rst.gb');
+//cpu.loadCart('../../../roms/08-misc instrs.gb');
 cpu.registers.PC = 0x0100;
+
 cpu.run();
 //cpu.halt();
 

@@ -13,6 +13,7 @@ import {DBG} from '../misc/dbg.js';
 export class CPU {
     public registers: CPURegisters;
     private halted = false;
+    private stopped = false;
     public bus: Bus;
     //public gpu: GPU;
     public firstStartup = true;
@@ -42,6 +43,9 @@ export class CPU {
     }
 
     public step() {
+        if (this.stopped) {
+            return;
+        }
         const interrupt = this.interruptHandler.getCurrentInterrupt();
         this.interruptHandler.exeInterrupt(interrupt);
         const instruction = this.fetch();
@@ -101,11 +105,15 @@ export class CPU {
         this.halted = false;
     }
 
+    public stop() {
+        this.stopped = true;
+    }
+
     private execute(instruction: number) {
-        this.printAll();
+        //this.printAll();
         //this.printInstruction(instruction);
-        //this.dbg.update();
-        //this.dbg.print();
+        this.dbg.update();
+        this.dbg.print();
         return executeCpuInstruction(instruction, this);
     }
 

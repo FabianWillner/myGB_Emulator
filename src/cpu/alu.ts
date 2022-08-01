@@ -70,6 +70,12 @@ export const ALU = {
         return {value: res, Z: res === 0 ? 1 : 0, N: 1, H: halfCarry};
     },
 
+    dec16(value: number) {
+        return {
+            value: (value - 1) & 0xffff,
+        };
+    },
+
     or(a: number, n: number) {
         const res = a | n;
 
@@ -162,6 +168,20 @@ export const ALU = {
         };
     },
 
+    sbc(a: number, b: number, carry: number) {
+        const sub = a - b - carry;
+        const maskedSub = sub & 0xff;
+        const halfCarry = (((a & 0xf) - (b & 0xf) - carry) >> 4) & 1;
+
+        return {
+            value: maskedSub,
+            Z: maskedSub === 0 ? 1 : 0,
+            N: 1,
+            H: halfCarry,
+            C: (sub >> 8) & 1,
+        };
+    },
+
     adc(a: number, b: number, carry: number) {
         const sum = a + b + carry;
         const maskedValue = sum & 0xff;
@@ -185,6 +205,40 @@ export const ALU = {
             N: 0,
             H: 1,
             C: 0,
+        };
+    },
+
+    daa(a: number, n: number, h: number, c: number) {
+        let res = a;
+        let correction = 0;
+
+        if (h === 1) {
+            correction |= 0x06;
+        }
+
+        if (c === 1) {
+            correction |= 0x60;
+        }
+
+        if (n === 0) {
+            if ((res & 0x0f) > 0x09) {
+                correction |= 0x06;
+            }
+
+            if (res > 0x99) {
+                correction |= 0x60;
+            }
+
+            res = res + correction;
+        } else {
+            res = res - correction;
+        }
+
+        return {
+            value: res & 0xff,
+            Z: (res & 0xff) === 0 ? 1 : 0,
+            H: 0,
+            C: (correction & 0x60) !== 0 ? 1 : 0,
         };
     },
 
