@@ -6,11 +6,16 @@ const cpu = new CPU();
 //cpu.loadCart('../../../roms/Tetris.rom');
 //cpu.loadCart('../../../roms/dmg-acid2.gb');
 //cpu.loadCart('../../../roms/01-special.gb');
-cpu.loadCart('../../../roms/03-op sp,hl.gb');
+cpu.loadCart('../../../roms/02-interrupts.gb');
+//cpu.loadCart('../../../roms/03-op sp,hl.gb');
 //cpu.loadCart('../../../roms/04-op r,imm.gb');
+//cpu.loadCart('../../../roms/05-op rp.gb');
 //cpu.loadCart('../../../roms/06-ld r,r.gb');
-//cpu.loadCart('../../../roms/07-jr,jp,call,ret,rst.gb');
-//cpu.loadCart('../../../roms/08-misc instrs.gb');
+//cpu.loadCart('../../../roms/07-jr,jp,call,ret,rst.gb'); // This one failed
+//cpu.loadCart('../../../roms/08-misc instrs.gb'); // Failed
+//cpu.loadCart('../../../roms/09-op r,r.gb'); // I think passed
+//cpu.loadCart('../../../roms/10-bit ops.gb'); // doesnt end
+//cpu.loadCart('../../../roms/11-op a,(hl).gb'); // doesnt end
 cpu.registers.PC = 0x0100;
 
 cpu.run();

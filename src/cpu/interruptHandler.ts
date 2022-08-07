@@ -1,5 +1,5 @@
-import {Bus} from '../memory/bus';
-import {CPU} from './cpu';
+import {Bus} from '../memory/bus.js';
+import {CPU} from './cpu.js';
 
 export enum InterruptType {
     None,

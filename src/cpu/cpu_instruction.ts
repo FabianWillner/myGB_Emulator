@@ -16,6 +16,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
     let PC = registers.PC + 1;
     switch (opcode) {
         case ins.NOP:
+            cpu.emuCycle(4);
             return PC;
 
         case ins.CB:
@@ -23,9 +24,12 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.JP_a16:
             PC = bus.read16(PC);
+
+            cpu.emuCycle(16);
             return PC;
 
         case ins.JP_HL:
+            cpu.emuCycle(4);
             return registers.HL;
 
         case ins.LD_A_AC:
@@ -99,22 +103,28 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.PUSH_HL:
             stack.push16(registers.HL);
+
+            cpu.emuCycle(16);
             return PC;
 
         case ins.LD_BC_D16:
             registers.BC = bus.read16(PC);
+            cpu.emuCycle(12);
             return PC + 2;
 
         case ins.LD_DE_D16:
             registers.DE = bus.read16(PC);
+            cpu.emuCycle(12);
             return PC + 2;
 
         case ins.LD_HL_D16:
             registers.HL = bus.read16(PC);
+            cpu.emuCycle(12);
             return PC + 2;
 
         case ins.LD_SP_D16:
             registers.SP = bus.read16(PC);
+            cpu.emuCycle(12);
             return PC + 2;
 
         case ins.XOR_A: {
@@ -337,30 +347,37 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.LD_A_D8:
             registers.A = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_B_D8:
             registers.B = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_C_D8:
             registers.C = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_D_D8:
             registers.D = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_E_D8:
             registers.E = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_H_D8:
             registers.H = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_L_D8:
             registers.L = bus.read8(PC);
+            cpu.emuCycle(8);
             return PC + 1;
 
         case ins.LD_HLD_A:
@@ -375,243 +392,301 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.LD_A_A:
             registers.A = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_B:
             registers.A = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_C:
             registers.A = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_D:
             registers.A = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_E:
             registers.A = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_H:
             registers.A = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_L:
             registers.A = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_A_HL:
             registers.A = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_B_A:
             registers.B = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_B:
             registers.B = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_C:
             registers.B = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_D:
             registers.B = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_E:
             registers.B = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_H:
             registers.B = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_L:
             registers.B = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_B_HL:
             registers.B = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_C_A:
             registers.C = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_B:
             registers.C = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_C:
             registers.C = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_D:
             registers.C = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_E:
             registers.C = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_H:
             registers.C = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_L:
             registers.C = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_C_HL:
             registers.C = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_D_A:
             registers.D = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_B:
             registers.D = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_C:
             registers.D = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_D:
             registers.D = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_E:
             registers.D = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_H:
             registers.D = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_L:
             registers.D = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_D_HL:
             registers.D = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_E_A:
             registers.E = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_B:
             registers.E = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_C:
             registers.E = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_D:
             registers.E = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_E:
             registers.E = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_H:
             registers.E = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_L:
             registers.E = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_E_HL:
             registers.E = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_H_A:
             registers.H = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_B:
             registers.H = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_C:
             registers.H = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_D:
             registers.H = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_E:
             registers.H = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_H:
             registers.H = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_L:
             registers.H = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_H_HL:
             registers.H = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.LD_L_A:
             registers.L = registers.A;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_B:
             registers.L = registers.B;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_C:
             registers.L = registers.C;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_D:
             registers.L = registers.D;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_E:
             registers.L = registers.E;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_H:
             registers.L = registers.H;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_L:
             registers.L = registers.L;
+            cpu.emuCycle(4);
             return PC;
 
         case ins.LD_L_HL:
             registers.L = bus.read8(registers.HL);
+            cpu.emuCycle(8);
             return PC;
 
         case ins.INC_A: {
-            const {value, H, Z, N} = ALU.inc(registers.A);
+            const {value, H, Z} = ALU.inc(registers.A);
             registers.A = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
 
         case ins.INC_B: {
-            const {value, H, Z, N} = ALU.inc(registers.B);
+            const {value, H, Z} = ALU.inc(registers.B);
             registers.B = value;
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -621,6 +696,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -630,6 +706,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -639,6 +716,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.CALL_A16: {
@@ -693,27 +771,36 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
 
         case ins.RST_00:
             stack.push16(PC);
-            return 0x0000;
+            cpu.emuCycle(16);
+            return 0;
+
         case ins.RST_08:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0008;
         case ins.RST_10:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0010;
         case ins.RST_18:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0018;
         case ins.RST_20:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0020;
         case ins.RST_28:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0028;
         case ins.RST_30:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0030;
         case ins.RST_38:
             stack.push16(PC);
+            cpu.emuCycle(16);
             return 0x0038;
 
         case ins.LD_A_DE:
@@ -815,6 +902,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -824,6 +912,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.H = H;
             registers.flags.Z = Z;
             registers.flags.N = 0;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1012,6 +1101,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = 0;
             registers.flags.N = 0;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1365,8 +1455,10 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             const {H, Z, N, C} = ALU.sub(registers.A, registers.A);
             registers.flags.H = H;
             registers.flags.Z = Z;
-            registers.flags.N = N;
+            registers.flags.N = 1;
             registers.flags.C = C;
+
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1376,6 +1468,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1385,6 +1478,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1394,6 +1488,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1403,6 +1498,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1412,6 +1508,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1421,6 +1518,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1430,6 +1528,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
 
@@ -1439,6 +1538,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.Z = Z;
             registers.flags.N = N;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC + 1;
         }
 
@@ -1449,6 +1549,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
 
@@ -1459,6 +1560,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
 
@@ -1469,6 +1571,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
 
@@ -1479,39 +1582,48 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = 0;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
 
         case ins.LD_HL_A: {
             bus.write8(registers.HL, registers.A);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_B: {
             bus.write8(registers.HL, registers.B);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_C: {
             bus.write8(registers.HL, registers.C);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_D: {
             bus.write8(registers.HL, registers.D);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_E: {
             bus.write8(registers.HL, registers.E);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_H: {
             bus.write8(registers.HL, registers.H);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_L: {
             bus.write8(registers.HL, registers.L);
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.LD_HL_D8: {
             bus.write8(registers.HL, bus.read8(PC));
+            cpu.emuCycle(12);
             return PC + 1;
         }
         case ins.RLCA: {
@@ -1523,42 +1635,52 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = 0;
             registers.flags.H = 0;
             registers.flags.C = carry;
+            cpu.emuCycle(4);
             return PC;
         }
 
         case ins.LD_A16_SP:
             bus.write16(bus.read16(PC), registers.SP);
+            cpu.emuCycle(20);
             return PC + 2;
 
         case ins.JP_NZ_A16:
             if (registers.flags.Z) {
                 PC += 2;
+                cpu.emuCycle(12);
             } else {
                 PC = bus.read16(PC);
+                cpu.emuCycle(16);
             }
             return PC;
 
         case ins.JP_Z_A16:
             if (!registers.flags.Z) {
                 PC += 2;
+                cpu.emuCycle(12);
             } else {
                 PC = bus.read16(PC);
+                cpu.emuCycle(16);
             }
             return PC;
 
         case ins.JP_NC_A16:
             if (registers.flags.C) {
                 PC += 2;
+                cpu.emuCycle(12);
             } else {
                 PC = bus.read16(PC);
+                cpu.emuCycle(16);
             }
             return PC;
 
         case ins.JP_C_A16:
             if (!registers.flags.C) {
                 PC += 2;
+                cpu.emuCycle(12);
             } else {
                 PC = bus.read16(PC);
+                cpu.emuCycle(16);
             }
             return PC;
 
@@ -1628,6 +1750,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1643,6 +1766,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1658,6 +1782,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1673,6 +1798,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1688,6 +1814,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1703,6 +1830,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1718,6 +1846,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
 
@@ -1733,6 +1862,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
 
@@ -1748,6 +1878,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC + 1;
         }
 
@@ -1759,6 +1890,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_B: {
@@ -1769,6 +1901,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_C: {
@@ -1779,6 +1912,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_D: {
@@ -1789,6 +1923,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_E: {
@@ -1799,6 +1934,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_H: {
@@ -1809,6 +1945,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_L: {
@@ -1819,6 +1956,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(4);
             return PC;
         }
         case ins.SUB_HL: {
@@ -1832,6 +1970,7 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC;
         }
         case ins.SUB_D8: {
@@ -1842,15 +1981,18 @@ export function executeCpuInstruction(opcode: number, cpu: CPU): number {
             registers.flags.N = N;
             registers.flags.H = H;
             registers.flags.C = C;
+            cpu.emuCycle(8);
             return PC + 1;
         }
 
         case ins.LDH_A8_A:
             bus.write16(0xff00 + bus.read8(PC), registers.A);
+            cpu.emuCycle(12);
             return PC + 1;
 
         case ins.LDH_A_A8:
             registers.A = bus.read8((0xff00 + bus.read8(PC)) & 0xffff);
+            cpu.emuCycle(12);
             return PC + 1;
 
         default: {

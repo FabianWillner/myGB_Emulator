@@ -1,3 +1,4 @@
+import {Timer} from '../timer/timer.js';
 import {MemoryDevice} from './bus.js';
 import {Memory} from './memory.js';
 
@@ -6,6 +7,12 @@ export class IO implements MemoryDevice {
     private SC_SerialTransferControl = 0;
     private IF_InterruptFlag = 0;
     private memory: Memory = new Memory(0xffff);
+    private timer: Timer;
+
+    constructor(timer: Timer) {
+        this.timer = timer;
+    }
+
     read8(address: number): number {
         switch (address) {
             case 0xff01:
@@ -14,9 +21,13 @@ export class IO implements MemoryDevice {
                 return this.SC_SerialTransferControl;
             case 0xff0f:
                 return this.IF_InterruptFlag;
-            default:
-                return this.memory.read8(address);
         }
+        if (address >= 0xff04 && address <= 0xff07) {
+            // TIMER
+            this.timer.read8(address);
+        }
+
+        return this.memory.read8(address);
     }
 
     write8(address: number, value: number): void {
@@ -31,10 +42,14 @@ export class IO implements MemoryDevice {
             case 0xff0f:
                 this.IF_InterruptFlag = value & 0xff;
                 return;
-            default:
-                this.memory.write8(address, value);
-                return;
         }
+        if (address >= 0xff04 && address <= 0xff07) {
+            // TIMER
+            this.timer.write8(address, value);
+        }
+
+        this.memory.write8(address, value);
+        return;
     }
 
     read16(address: number): number {

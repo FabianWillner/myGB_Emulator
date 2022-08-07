@@ -3,12 +3,11 @@ import * as instructions from '../instructions/instructions.js';
 import {Bus} from '../memory/bus.js';
 import {Cartridge} from '../cart/cartridge.js';
 import {executeCpuInstruction} from './cpu_instruction.js';
-import {GPU} from '../gpu/gpu.js';
 import {Stack} from './stack.js';
-import {getTokenSourceMapRange} from 'typescript';
-import {timeStamp} from 'console';
 import {InterruptHandler, InterruptType} from './interruptHandler.js';
 import {DBG} from '../misc/dbg.js';
+import {Timer} from '../timer/timer.js';
+import {IO} from '../memory/io.js';
 
 export class CPU {
     public registers: CPURegisters;
@@ -22,13 +21,19 @@ export class CPU {
     public shouldEnableInterrupt = false;
     public interruptHandler: InterruptHandler;
     public dbg: DBG;
+    public timer: Timer;
 
     public constructor() {
         this.registers = new CPURegisters();
+
         this.bus = new Bus(new Cartridge());
-        //this.gpu = new GPU();
-        this.stack = new Stack(this.bus, this.registers);
         this.interruptHandler = new InterruptHandler(this);
+        this.timer = new Timer(this.interruptHandler);
+        this.timer.init();
+        this.bus.loadIO(new IO(this.timer));
+
+        this.stack = new Stack(this.bus, this.registers);
+
         this.dbg = new DBG(this.bus);
     }
 
@@ -119,7 +124,7 @@ export class CPU {
 
     public emuCycle(cycles: number, enableInterrupt: boolean = false) {
         // TODO
-
+        this.timer.tick();
         if (cycles > 0) {
             if (enableInterrupt) {
                 this.shouldEnableInterrupt = false;

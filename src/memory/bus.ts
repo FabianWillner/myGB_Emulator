@@ -1,4 +1,5 @@
 import {Cartridge} from '../cart/cartridge.js';
+import {Timer} from '../timer/timer.js';
 import {IO} from './io.js';
 import {Memory} from './memory.js';
 import {RAM} from './ram.js';
@@ -49,7 +50,7 @@ export class Bus implements MemoryDevice {
     public cartridge: Cartridge;
     public vram: VRam;
     private memory: Memory;
-    private io: IO;
+    private io: IO | Memory;
     private ram: RAM;
     private interruptEnable: number = 0;
 
@@ -61,8 +62,12 @@ export class Bus implements MemoryDevice {
             MemoryRanges.VRAM_START
         );
         this.memory = new Memory(0xffff);
-        this.io = new IO();
+        this.io = this.memory;
         this.ram = new RAM();
+    }
+
+    public loadIO(io: IO) {
+        this.io = io;
     }
 
     public read8(address: number): number {
